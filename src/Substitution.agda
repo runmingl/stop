@@ -5,7 +5,7 @@ open import Prelude
 open import Relation.Binary.PropositionalEquality as Eq using (_≡_)
 open import Level
 
-module Substitution {c ℓ : Level} (monoid : MonoidWithLeftZero c ℓ) where
+module Substitution {ℓ : Level} (monoid : MonoidWithLeftZero ℓ) where
 
 open import PCF monoid 
 
@@ -14,7 +14,7 @@ private
     τ τ₁ τ₂ σ : Type
     Γ Δ Ξ : Ctx
 
-Subst : Ctx → Ctx → Set c
+Subst : Ctx → Ctx → Set ℓ
 Subst Γ Δ = ∀ {τ} → Γ ∋ τ → Δ ⊢ τ
 
 Rename : Ctx → Ctx → Set

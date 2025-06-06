@@ -4,7 +4,7 @@ open import Prelude
 
 open import Level 
 
-module SmallStep {c ℓ : Level} (monoid : MonoidWithLeftZero c ℓ) where
+module SmallStep {ℓ : Level} (monoid : MonoidWithLeftZero ℓ) where
 
 open import PCF monoid
 open import Substitution monoid
@@ -14,7 +14,7 @@ private
     τ σ : Type
 
 infix 2 _↦_↝_
-data _↦_↝_ : · ⊢ τ → · ⊢ τ → Effect → Set c where
+data _↦_↝_ : · ⊢ τ → · ⊢ τ → Effect → Set ℓ where
   se-suc : {e e' : · ⊢ Nat} {a : Effect} →
       e ↦ e' ↝ a 
     ------------------------
@@ -61,7 +61,7 @@ data _↦_↝_ : · ⊢ τ → · ⊢ τ → Effect → Set c where
     → `eff a v ↦ v ↝ a  
 
 infix 2 _↦*_↝_
-data _↦*_↝_ : · ⊢ τ → · ⊢ τ → Effect → Set c where
+data _↦*_↝_ : · ⊢ τ → · ⊢ τ → Effect → Set ℓ where
   ↦*-refl : {e : · ⊢ τ} → 
     
     ------------------------

@@ -2,7 +2,7 @@ open import Prelude
 
 open import Level
 
-module PCF {c ℓ : Level} (monoid : MonoidWithLeftZero c ℓ) where
+module PCF {ℓ : Level} (monoid : MonoidWithLeftZero ℓ) where
     
 open MonoidWithLeftZero monoid public renaming (Carrier to Effect)
 
@@ -26,7 +26,7 @@ data _∋_ : Ctx → Type → Set where
   S : Γ ∋ τ → (Γ # σ) ∋ τ
 
 infix 4 _⊢_
-data _⊢_ : Ctx → Type → Set c where
+data _⊢_ : Ctx → Type → Set ℓ where
   `_    : 
       Γ ∋ τ 
     ------------------------
@@ -66,7 +66,7 @@ data _⊢_ : Ctx → Type → Set c where
     ------------------------
     → Γ ⊢ τ
 
-data _val : · ⊢ τ → Set c where 
+data _val : · ⊢ τ → Set ℓ where 
   v-zero :
 
     ------------------------

@@ -4,7 +4,7 @@ open import Prelude
 
 open import Level 
 
-module BigStop {c ℓ : Level} (monoid : MonoidWithLeftZero c ℓ) where
+module BigStop {ℓ : Level} (monoid : MonoidWithLeftZero ℓ) where
 
 open import PCF monoid
 open import Substitution monoid
@@ -14,7 +14,7 @@ private
     τ σ : Type
 
 infix 2 _⇓_↝_
-data _⇓_↝_ : · ⊢ τ → · ⊢ τ → Effect → Set c where
+data _⇓_↝_ : · ⊢ τ → · ⊢ τ → Effect → Set ℓ where
   be-suc : {e v : · ⊢ Nat} {a : Effect} →
       e ⇓ v ↝ a 
     ------------------------
