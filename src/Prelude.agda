@@ -42,3 +42,7 @@ trivialMonoidWithLeftZero = record
     } 
   ; isLeftZero = λ _ → Eq.refl
   }
+
+infix 1 _⇔_
+_⇔_ : {ℓ : Level} → Set ℓ → Set ℓ → Set ℓ
+_⇔_ A B = (A → B) × (B → A)

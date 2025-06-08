@@ -40,9 +40,9 @@ data _⇓_↝_ : · ⊢ τ → · ⊢ τ → Effect → Set ℓ where
     → `app e₁ e₂ ⇓ v₁ ↝ a ∙ b ∙ c  
 
   be-eff : {e v : · ⊢ τ} {a b : Effect} →
-      e ⇓ v ↝ a
+      e ⇓ v ↝ b
     ------------------------
-    → `eff b e ⇓ v ↝ a ∙ b 
+    → `eff a e ⇓ v ↝ a ∙ b 
 
   be-val : {e v : · ⊢ τ} {a : Effect} → 
       v val

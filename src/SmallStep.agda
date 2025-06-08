@@ -50,15 +50,10 @@ data _↦_↝_ : · ⊢ τ → · ⊢ τ → Effect → Set ℓ where
     ------------------------
     → `app (`fun e) v ↦ e [ (`fun e) ][ v ] ↝ 1#
 
-  se-eff : {e e' : · ⊢ τ} {a b : Effect} →
-      e ↦ e' ↝ a
+  se-eff : {e : · ⊢ τ} {a : Effect} →
+     
     ------------------------
-    → `eff b e ↦ `eff b e' ↝ a
-
-  se-eff₁ : {v : · ⊢ τ} {a : Effect} →
-      v val 
-    ------------------------
-    → `eff a v ↦ v ↝ a  
+    `eff a e ↦ e ↝ a  
 
 infix 2 _↦*_↝_
 data _↦*_↝_ : · ⊢ τ → · ⊢ τ → Effect → Set ℓ where
@@ -82,3 +77,8 @@ data _↦*_↝_ : · ⊢ τ → · ⊢ τ → Effect → Set ℓ where
 ↦*-trans {b = c} (↦*-step {a = a} {b = b} step₁ step₂) step rewrite assoc a b c = 
     ↦*-step step₁ (↦*-trans step₂ step)
 
+compatible : {p : · ⊢ τ → · ⊢ σ}
+    → ({e e' : · ⊢ τ} {a : Effect} → e ↦ e' ↝ a → p e ↦ p e' ↝ a)
+    → {e e' : · ⊢ τ} {a : Effect} → e ↦* e' ↝ a → p e ↦* p e' ↝ a 
+compatible alift ↦*-refl       = ↦*-refl
+compatible alift (↦*-step x s) = ↦*-step (alift x) (compatible alift s)

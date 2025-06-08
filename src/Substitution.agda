@@ -4,6 +4,7 @@ open import Prelude
 
 open import Relation.Binary.PropositionalEquality as Eq using (_≡_)
 open import Level
+open import Function.Base using (_∘_)
 
 module Substitution {ℓ : Level} (monoid : MonoidWithLeftZero ℓ) where
 
@@ -53,11 +54,28 @@ extend v γ (S x) = γ x
 id-γ : Subst Γ Γ
 id-γ = `_ 
 
+↑ : Subst Γ (Γ # τ)
+↑ x = ` (S x)
+
+⇈ : Γ ⊢ τ → Γ # σ ⊢ τ
+⇈ = subst ↑
+
 _[_] : (Γ # τ) ⊢ σ → Γ ⊢ τ → Γ ⊢ σ
 _[_] e e₁ = subst (extend e₁ id-γ) e
 
 _[_][_] : (Γ # τ₁ # τ₂) ⊢ σ → Γ ⊢ τ₁ → Γ ⊢ τ₂ → Γ ⊢ σ
 _[_][_] e e₁ e₂ = subst (extend e₂ (extend e₁ id-γ)) e
+
+sub-tail : {e : Δ ⊢ τ} {γ : Subst Γ Δ} → (λ M → subst {τ = τ} (extend e γ) (↑ M)) ≡ γ
+sub-tail = {!   !}
+
+-- sub-tail : ∀{Γ Δ} {A B} {M : Δ ⊢ A} {σ : Subst Γ Δ}
+        --  → (↑ ⨟ M • σ) {A = B} ≡ σ
+-- sub-tail = extensionality λ x → refl
+
+combine-subst : (γ : Subst Γ ·) (M : Γ # τ ⊢ σ) (M' : · ⊢ τ) → 
+        subst (subst (extend M' `_) ∘ (weaken γ)) M ≡ subst (extend M' `_) (subst (weaken γ) M)
+combine-subst γ M M' = {!   !}
 
 subst-eq : (γ : Subst Γ ·) (e₁ : Γ # τ ⊢ σ) (e₂ : · ⊢ τ) → 
   subst (extend e₂ γ) e₁ ≡ (subst (weaken γ) e₁ [ e₂ ])
