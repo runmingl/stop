@@ -25,7 +25,7 @@ module SmallStep⇔BigStep where
     → e ↦* v ↝ a 
     ------------------------
     → e ⇓ v ↝ a
-  ↦*→⇓ {e = e} v-val ↦*-refl                  = be-val {e = e} {a = 1#} v-val
+  ↦*→⇓ {e = e} v-val ↦*-refl                  = v⇓v v-val
   ↦*→⇓ v-val (↦*-step {a = a} e↦e'↝a e'↦*v↝b) = ↦→⇓ e↦e'↝a (↦*→⇓ v-val e'↦*v↝b)
     where 
       ↦→⇓ : {e e' v : · ⊢ τ} {a b : Effect} → 
@@ -35,8 +35,6 @@ module SmallStep⇔BigStep where
         → e ⇓ v ↝ a ∙ b 
       ↦→⇓ (se-suc e↦e'↝a) (be-suc e'⇓v↝b)                 
           = be-suc (↦→⇓ e↦e'↝a e'⇓v↝b)
-      ↦→⇓ (se-suc {e' = v} e↦e'↝a) (be-val (v-suc v-val)) 
-          = be-suc (↦→⇓ e↦e'↝a (be-val {e = v} {a = 1#} v-val))
       ↦→⇓ {a = a} (se-case e↦e'↝a) (be-case-z {a = c} {b = d} e'⇓z↝c e'⇓v↝d) 
         rewrite sym (assoc a c d) 
           = be-case-z (↦→⇓ e↦e'↝a e'⇓z↝c) e'⇓v↝d
@@ -44,19 +42,19 @@ module SmallStep⇔BigStep where
         rewrite sym (assoc a c d) 
           = be-case-s (↦→⇓ e↦e'↝a e'⇓s↝c) e'⇓v↝d
       ↦→⇓ se-case-z e'⇓v↝b 
-          = be-case-z (be-val {e = `zero} {a = 1#} v-zero) e'⇓v↝b
+          = be-case-z (be-zero) e'⇓v↝b
       ↦→⇓ (se-case-s {v = v} v-val) e'⇓v↝b 
-          = be-case-s (be-val {e = `suc v} {a = 1#} (v-suc v-val)) e'⇓v↝b
+          = be-case-s (v⇓v (v-suc v-val)) e'⇓v↝b 
       ↦→⇓ {a = a} (se-app e↦e'↝a) (be-app {a = b} {b = c} {c = d} e'⇓v↝b e'⇓v↝c e'⇓v↝d) 
         rewrite trans (sym (assoc a (b ∙ c) d)) (cong (λ e → e ∙ d) (sym (assoc a b c))) 
           = be-app (↦→⇓ e↦e'↝a e'⇓v↝b) e'⇓v↝c e'⇓v↝d
-      ↦→⇓ {a = a} (se-app₁ e↦e'↝a) (be-app {e = e} {a = b} {b = c} {c = d} (be-val v-fun) e'⇓v↝c e'⇓v↝d) 
+      ↦→⇓ {a = a} (se-app₁ e↦e'↝a) (be-app {e = e} {a = b} {b = c} {c = d} (be-fun) e'⇓v↝c e'⇓v↝d) 
         rewrite trans (cong (λ e → a ∙ (e ∙ d)) (identityˡ c)) 
                 (trans (sym (assoc a c d)) (cong (λ e → e ∙ d) (sym (identityˡ (a ∙ c))))) 
-          = be-app (be-val {e = `fun e} {a = 1#} v-fun) (↦→⇓ e↦e'↝a e'⇓v↝c) e'⇓v↝d 
+          = be-app be-fun (↦→⇓ e↦e'↝a e'⇓v↝c) e'⇓v↝d 
       ↦→⇓ {b = b} (se-app₂ {e = e} {v = v} v-val) e'⇓v↝b 
         rewrite trans (cong (λ a → 1# ∙ a) (sym (identityˡ b))) (sym (assoc 1# 1# b)) 
-          = be-app (be-val {e = `fun e} {a = 1#} v-fun) (be-val {e = v} {a = 1#} v-val) e'⇓v↝b
+          = be-app be-fun (v⇓v v-val) e'⇓v↝b 
       ↦→⇓ se-eff e'⇓v↝b 
           = be-eff e'⇓v↝b
       
@@ -64,6 +62,7 @@ module SmallStep⇔BigStep where
       e ⇓ v ↝ a 
     ------------------------
     → e ↦* v ↝ a
+  ⇓→↦* be-zero = ↦*-refl
   ⇓→↦* (be-suc e⇓v↝a) = compatible {p = `suc} se-suc (⇓→↦* e⇓v↝a)
   ⇓→↦* (be-case-z {e = e} {e₁ = e₁} {e₂ = e₂} {b = b} e⇓v↝a e⇓v↝b) = 
     let `case_e_e₁_e₂↦*`case_`zero_e₁_e₂↝a = compatible se-case (⇓→↦* e⇓v↝a) in 
@@ -76,6 +75,7 @@ module SmallStep⇔BigStep where
     let `case_`sucv_e₁_e₂↦*v↝1∙b = ↦*-step (se-case-s {a = 1#} v-val) (⇓→↦* e⇓v↝b) in 
     let `case_`sucv_e₁_e₂↦*v↝b = Eq.subst (λ c → `case (`suc _) _ _ ↦* _ ↝ c) (identityˡ _) `case_`sucv_e₁_e₂↦*v↝1∙b in
     ↦*-trans `case_e_e₁_e₂↦*`case_`sucv_e₁_e₂↝a `case_`sucv_e₁_e₂↦*v↝b
+  ⇓→↦* be-fun = ↦*-refl
   ⇓→↦* (be-app {e = e} e⇓v↝a e⇓v↝b e⇓v↝c) = 
     let `app_e₁_e₂↦*`app_`fun_e_e₂↝a = compatible se-app (⇓→↦* e⇓v↝a) in 
     let `app_`fun_e_e₂↦*`app_`fun_e_v↝b = compatible se-app₁ (⇓→↦* e⇓v↝b) in 
@@ -84,8 +84,7 @@ module SmallStep⇔BigStep where
     ↦*-trans 
       (↦*-trans `app_e₁_e₂↦*`app_`fun_e_e₂↝a `app_`fun_e_e₂↦*`app_`fun_e_v↝b) `app_`fun_e_v↦*v₁↝c
   ⇓→↦* (be-eff e⇓v↝a) = ↦*-step se-eff (⇓→↦* e⇓v↝a)
-  ⇓→↦* (be-val _) = ↦*-refl
-  
+
   ↦*⇔⇓ : {e v : · ⊢ τ} {a : Effect} → (v val) × (e ↦* v ↝ a) ⇔ e ⇓ v ↝ a
   ↦*⇔⇓ = (λ (v-val , e↦*v↝a) → ↦*→⇓ v-val e↦*v↝a) , λ e⇓v↝a → ⇓-val e⇓v↝a , ⇓→↦* e⇓v↝a 
 
@@ -116,6 +115,7 @@ module KMachine⇔BigStep where
       → (k : K ÷ τ) 
       ------------------------
       → k ▹ e ↦* k ◃ v ↝ a
+  ⇓→↦* (be-zero) k rewrite sym (identityʳ 1#) = ↦*-step (ke-val v-zero) ↦*-refl
   ⇓→↦* (be-suc {v = v} {a = a} e⇓v) k = 
     let step₁ = ↦*-step ke-suc (⇓→↦* e⇓v (k ⨾ `suc (` Z))) in
     let v-val = ⇓-val e⇓v in
@@ -158,6 +158,7 @@ module KMachine⇔BigStep where
     where 
       lem : (`case (` Z) (⇈ e₁) (⟪ exts ↑ ⟫ e₂)) [ `suc v ] ≡ `case (`suc v) e₁ e₂
       lem rewrite shift-subst₁ (`suc v) e₁ rewrite shift-subst₂ (`suc v) e₂ = Eq.refl
+  ⇓→↦* (be-fun) k rewrite sym (identityʳ 1#) = ↦*-step (ke-val v-fun) ↦*-refl
   ⇓→↦* (be-app {e₁ = e₁} {e = e} {e₂ = e₂} {v = v} {v₁ = v₁} {a} {b} {c} e⇓f e⇓v e⇓v₁) k = 
     let step₁ = ↦*-step (ke-app-f {e₁ = e₁} {e₂ = e₂}) (⇓→↦* e⇓f (k ⨾ `app (` Z) (⇈ e₂))) in 
     let step₂ = ↦*-step (ke-pop {v = `fun e} {k = k} {e = `app (` Z) (⇈ e₂)} v-fun) ↦*-refl in 
@@ -198,5 +199,4 @@ module KMachine⇔BigStep where
           a ∙ b ∙ c
         ∎
   ⇓→↦* (be-eff e⇓v) k = ↦*-step ke-eff (⇓→↦* e⇓v k)
-  ⇓→↦* (be-val v-val) k rewrite sym (identityʳ 1#) = ↦*-step (ke-val v-val) ↦*-refl
       

@@ -15,6 +15,11 @@ private
 
 infix 2 _⇓_↝_
 data _⇓_↝_ : · ⊢ τ → · ⊢ τ → Effect → Set ℓ where
+  be-zero : 
+
+    ------------------------
+    `zero ⇓ `zero ↝ 1# 
+
   be-suc : {e v : · ⊢ Nat} {a : Effect} →
       e ⇓ v ↝ a 
     ------------------------
@@ -32,6 +37,11 @@ data _⇓_↝_ : · ⊢ τ → · ⊢ τ → Effect → Set ℓ where
     ------------------------
     → `case e e₁ e₂ ⇓ v₁ ↝ a ∙ b
 
+  be-fun : {e : · # τ ⇒ σ # τ ⊢ σ} →
+    
+    ------------------------
+    `fun e ⇓ `fun e ↝ 1#
+
   be-app : {e₁ : · ⊢ τ ⇒ σ} {e : · # τ ⇒ σ # τ ⊢ σ} {e₂ v : · ⊢ τ} {v₁ : · ⊢ σ} {a b c : Effect} →
       e₁ ⇓ `fun e ↝ a
     → e₂ ⇓ v ↝ b
@@ -44,19 +54,22 @@ data _⇓_↝_ : · ⊢ τ → · ⊢ τ → Effect → Set ℓ where
     ------------------------
     → `eff a e ⇓ v ↝ a ∙ b 
 
-  be-val : {e v : · ⊢ τ} {a : Effect} → 
-      v val
-    ------------------------
-    → v ⇓ v ↝ 1#
-
 ⇓-val : {e v : · ⊢ τ} {a : Effect} → 
     e ⇓ v ↝ a 
   ------------------------
   → v val
+⇓-val (be-zero)                     = v-zero
 ⇓-val (be-suc e⇓v↝a)                = v-suc (⇓-val e⇓v↝a)
 ⇓-val (be-case-z _ e₁⇓v↝b)          = ⇓-val e₁⇓v↝b
 ⇓-val (be-case-s _ e₂[v₁]⇓v↝b)      = ⇓-val e₂[v₁]⇓v↝b
+⇓-val (be-fun)                      = v-fun
 ⇓-val (be-app _ _ e[`fune][v₁]⇓v↝c) = ⇓-val e[`fune][v₁]⇓v↝c
 ⇓-val (be-eff e⇓v↝a)                = ⇓-val e⇓v↝a
-⇓-val (be-val vval)                 = vval
 
+v⇓v : {v : · ⊢ τ} → 
+    v val 
+  ------------------------
+  → v ⇓ v ↝ 1#
+v⇓v v-zero        = be-zero
+v⇓v (v-suc v-val) = be-suc (v⇓v v-val)
+v⇓v v-fun         = be-fun

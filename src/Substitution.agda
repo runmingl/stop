@@ -172,7 +172,6 @@ cong-rename {M = `eff a M}      rr = Eq.cong (λ M → `eff a M) (cong-rename rr
 
 cong-exts : ∀ {Γ Δ} {σ σ′ : Subst Γ Δ} {B}
    → (∀ {A} → σ ≡ σ′ {A}) 
-     -----------------------------------
    → ∀{A} → exts σ {B = B} ≡ exts σ′ {A}
 cong-exts {Γ} {Δ} {σ} {σ′} {B} ss {A} = funext lemma
    where
