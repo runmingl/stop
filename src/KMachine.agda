@@ -53,7 +53,7 @@ data _↦_↝_ : State → State → Effect → Set ℓ where
   ke-case : {k : K ÷ τ} {e₁ : · ⊢ τ} {e₂ : · # Nat ⊢ τ} {e : · ⊢ Nat} →
 
     ------------------------
-    k ▹ `case e e₁ e₂ ↦ k ⨾ `case (` Z) (⇈ e₁) (⇈ e₂) ▹ e ↝ 1#
+    k ▹ `case e e₁ e₂ ↦ k ⨾ `case (` Z) (⇈ e₁) (⟪ exts ↑ ⟫ e₂) ▹ e ↝ 1#
 
   ke-case-z : {k : K ÷ τ} {e₁ : · ⊢ τ} {e₂ : · # Nat ⊢ τ} →
 

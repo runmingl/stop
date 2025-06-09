@@ -7,12 +7,12 @@ module PCF {ℓ : Level} (monoid : MonoidWithLeftZero ℓ) where
 open MonoidWithLeftZero monoid public renaming (Carrier to Effect)
 
 infixr 7 _⇒_
-data Type : Set where
+data Type : Set ℓ where
   Nat : Type
   _⇒_ : Type → Type → Type 
   
 infixl 5 _#_
-data Ctx : Set where
+data Ctx : Set ℓ where
   ·   : Ctx
   _#_ : Ctx → Type → Ctx
 
@@ -21,7 +21,7 @@ private
     τ σ : Type
     Γ : Ctx
 
-data _∋_ : Ctx → Type → Set where
+data _∋_ : Ctx → Type → Set ℓ where
   Z : (Γ # τ) ∋ τ
   S : Γ ∋ τ → (Γ # σ) ∋ τ
 
