@@ -25,12 +25,6 @@ data _⇓_↝_ : · ⊢ τ → · ⊢ τ → Effect → Set ℓ where
     ------------------------
     → `suc e ⇓ `suc e' ↝ a
 
-  ste-suc-val : {e v : · ⊢ Nat} {a : Effect} →
-      e ⇓ v ↝ a 
-    → v val 
-    ------------------------
-    → `suc e ⇓ `suc v ↝ a
-
   ste-fun : {e : · # τ ⇒ σ # τ ⊢ σ} →
     
     ------------------------
@@ -40,44 +34,22 @@ data _⇓_↝_ : · ⊢ τ → · ⊢ τ → Effect → Set ℓ where
       e ⇓ e' ↝ a
     ------------------------
     → `case e e₁ e₂ ⇓ `case e' e₁ e₂ ↝ a
-  
-  ste-case-val : {e v : · ⊢ Nat} {e₁ : · ⊢ τ} {e₂ : · # Nat ⊢ τ} {a : Effect} →
-      e ⇓ v ↝ a 
-    → v val
-    ------------------------
-    → `case e e₁ e₂ ⇓ `case v e₁ e₂ ↝ a
 
-  ste-app-seq : {e₁ e₁' : · ⊢ τ ⇒ σ} {e₂ e₂' : · ⊢ τ} {a b : Effect} →
+  ste-app-seq : {e₁ e₁' : · ⊢ τ ⇒ σ} {e₂ e₂ : · ⊢ τ} {a : Effect} →
       e₁ ⇓ e₁' ↝ a
+    ------------------------
+    → `app e₁ e₂ ⇓ `app e₁' e₂ ↝ a 
+
+  ste-app-val₁ : {e₁ : · ⊢ τ ⇒ σ} {e : · # τ ⇒ σ # τ ⊢ σ} {e₂ e₂' : · ⊢ τ} {a b : Effect} →
+      e₁ ⇓ `fun e ↝ a
     → e₂ ⇓ e₂' ↝ b
     ------------------------
-    → `app e₁ e₂ ⇓ `app e₁' e₂' ↝ a ∙ b
-
-  ste-app-val₁ : {e₁ v₁ : · ⊢ τ ⇒ σ} {e₂ e₂' : · ⊢ τ} {a b : Effect} →
-      e₁ ⇓ v₁ ↝ a
-    → v₁ val
-    → e₂ ⇓ e₂' ↝ b
-    ------------------------
-    → `app e₁ e₂ ⇓ `app v₁ e₂' ↝ a ∙ b
-
-  ste-app-val₂ : {e₁ v₁ : · ⊢ τ ⇒ σ} {e₂ v₂ : · ⊢ τ} {a b : Effect} →
-      e₁ ⇓ v₁ ↝ a  
-    → v₁ val 
-    → e₂ ⇓ v₂ ↝ b
-    → v₂ val 
-    ------------------------
-    → `app e₁ e₂ ⇓ `app v₁ v₂ ↝ a ∙ b
+    → `app e₁ e₂ ⇓ `app (`fun e) e₂' ↝ a ∙ b
   
   ste-eff-seq : {e e' : · ⊢ τ} {a b : Effect} →
       e ⇓ e' ↝ a
     ------------------------
     → `eff b e ⇓ `eff b e' ↝ a 
-  
-  ste-eff-val : {e v : · ⊢ τ} {a b : Effect} →
-      e ⇓ v ↝ a
-    → v val
-    ------------------------
-    → `eff b e ⇓ `eff b v ↝ a
 
   ste-case-z : {e : · ⊢ Nat} {e₁ e₁' : · ⊢ τ} {e₂ : · # Nat ⊢ τ} {a b : Effect} →
       e ⇓ `zero ↝ a 
