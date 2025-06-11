@@ -11,6 +11,7 @@ import BigStop
 
 -- Equivalence of semantics
 import Equivalence.SmallStepBigStep
-import Equivalence.SmallStepBigStop
 import Equivalence.StackMachineBigStep
+import Equivalence.SmallStepBigStop
 import Equivalence.BigStepBigStop
+import Equivalence.StackMachineBigStop 

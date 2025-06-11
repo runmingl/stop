@@ -49,7 +49,7 @@ effect-arithimic₂ a b c =
     → (k : K ÷ τ) 
     ------------------------
     → k ▹ e ↦* k ◃ v ↝ a
-⇓→↦* (be-zero) k rewrite sym (identityʳ 1#) = ↦*-step ke-zero ↦*-refl
+⇓→↦* be-zero k = k▹v↦*k◃v v-zero 
 ⇓→↦* (be-suc {v = v} {a = a} e⇓v) k = 
   let step₁ = ↦*-step ke-suc₁ (⇓→↦* e⇓v (k ⨾ suc⟨-⟩)) in
   let step₂ = ↦*-step ke-suc₂ ↦*-refl in 
@@ -67,19 +67,19 @@ effect-arithimic₂ a b c =
       ≡⟨ identityˡ a ⟩ 
         a 
       ∎
-⇓→↦* (be-case-z {e = e} {e₁ = e₁} {e₂ = e₂} {a = a} {b = b} e⇓z e⇓v) k rewrite sym (effect-arithimic₁ a b) = 
-  let step₁ = ↦*-step (ke-case {e₁ = e₁} {e₂ = e₂}) (⇓→↦* e⇓z (k ⨾ _)) in 
+⇓→↦* (be-case-z {a = a} {b = b} e⇓z e⇓v) k rewrite sym (effect-arithimic₁ a b) = 
+  let step₁ = ↦*-step ke-case (⇓→↦* e⇓z (k ⨾ _)) in 
   let step₂ = ↦*-step ke-case-z (⇓→↦* e⇓v k) in
     ↦*-trans step₁ step₂
-⇓→↦* (be-case-s {e = e} {v = v} {e₁ = e₁} {v₁ = v₁} {e₂ = e₂} {a = a} {b = b} e⇓s e⇓v) k rewrite sym (effect-arithimic₁ a b) = 
-  let step₁ = ↦*-step (ke-case {e₁ = e₁} {e₂ = e₂} {e = e}) (⇓→↦* e⇓s (k ⨾ _)) in 
+⇓→↦* (be-case-s {a = a} {b = b} e⇓s e⇓v) k rewrite sym (effect-arithimic₁ a b) = 
+  let step₁ = ↦*-step ke-case (⇓→↦* e⇓s (k ⨾ _)) in 
   let step₂ = ↦*-step ke-case-s (⇓→↦* e⇓v k) in
     ↦*-trans step₁ step₂
-⇓→↦* (be-fun) k rewrite sym (identityʳ 1#) = ↦*-step ke-fun ↦*-refl
-⇓→↦* (be-app {e₁ = e₁} {e = e} {e₂ = e₂} {v = v} {v₁ = v₁} {a} {b} {c} e⇓f e⇓v e⇓v₁) k rewrite sym (effect-arithimic₂ a b c) = 
-  let step₁ = ↦*-step (ke-app₁ {e₁ = e₁} {e₂ = e₂}) (⇓→↦* e⇓f (k ⨾ _)) in 
-  let step₂ = ↦*-step (ke-app₂ {k = k} {e = e} {e₂ = e₂}) (⇓→↦* e⇓v (k ⨾ _)) in
-  let step₃ = ↦*-step (ke-app₃ {e = e}) (⇓→↦* e⇓v₁ k) in
+⇓→↦* be-fun k = k▹v↦*k◃v v-fun
+⇓→↦* (be-app {a = a} {b = b} {c = c} e⇓f e⇓v e⇓v₁) k rewrite sym (effect-arithimic₂ a b c) = 
+  let step₁ = ↦*-step ke-app₁ (⇓→↦* e⇓f (k ⨾ _)) in 
+  let step₂ = ↦*-step ke-app₂ (⇓→↦* e⇓v (k ⨾ _)) in
+  let step₃ = ↦*-step ke-app₃ (⇓→↦* e⇓v₁ k) in
     ↦*-trans step₁ (↦*-trans step₂ step₃)
 ⇓→↦* (be-eff e⇓v) k = ↦*-step ke-eff (⇓→↦* e⇓v k)
   
@@ -87,12 +87,17 @@ infix 4 _⟪_
 _⟪_ : · ⊢ τ → · ⊢ τ → Set ℓ 
 _⟪_ {τ} e d = {v : · ⊢ τ} {a : Effect} → e ⇓ v ↝ a → d ⇓ v ↝ a
 
--- ⟪-● : {K : Frame} {e d : · ⊢ τ} →
---     (k : K ÷ τ) → 
---     e ⟪ d 
---   ------------------------
---   → k ● e ⟪ k ● d 
--- ⟪-● ε f H = f H
+⟪-● : {K : Frame} {e d : · ⊢ τ} →
+    (k : K ÷ τ) → 
+    e ⟪ d 
+  ------------------------
+  → k ● e ⟪ k ● d 
+⟪-● ε f H = f H
+⟪-● (K ⨾ suc⟨-⟩) f = {!   !}
+⟪-● (K ⨾ case⟨-⟩ e₁ e₂) f = {!   !}
+⟪-● (K ⨾ app⟨-⟩ e₂) f = {!   !}
+⟪-● (K ⨾ app e₁ ⟨-⟩) f = {!   !}
+
 -- ⟪-● (K ⨾ suc⟨-⟩) f =
 --   ⟪-● K (λ { (`suc v , a , be-suc e⇓v) → let (v , a , e⇓v , d⇓v) = f (v , a , e⇓v) in `suc v , a , be-suc e⇓v , be-suc d⇓v })
 -- ⟪-● (K ⨾ case⟨-⟩ e₁ e₂) f = ⟪-● K λ { (v , _ , be-case-z {a = a} {b = b} p p₁) → 

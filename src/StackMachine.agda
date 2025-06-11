@@ -2,6 +2,7 @@
 
 open import Prelude 
 
+open import Relation.Binary.PropositionalEquality as Eq using (cong₂)
 open import Level 
 
 module StackMachine {ℓ : Level} (monoid : MonoidWithLeftZero ℓ) where
@@ -140,6 +141,17 @@ compatible : {p : State → State}
     → {s s' : State} {a : Effect} → s ↦* s' ↝ a → p s ↦* p s' ↝ a 
 compatible alift ↦*-refl       = ↦*-refl
 compatible alift (↦*-step x s) = ↦*-step (alift x) (compatible alift s)
+
+k▹v↦*k◃v : {k : K ÷ τ} {v : · ⊢ τ} →
+    v val 
+  ------------------------
+  → k ▹ v ↦* k ◃ v ↝ 1#
+k▹v↦*k◃v v-zero rewrite sym (identityʳ 1#) = ↦*-step ke-zero ↦*-refl 
+k▹v↦*k◃v (v-suc v-val) rewrite trans (sym (identityˡ 1#)) (cong₂ _∙_ (sym (identityˡ 1#)) (sym (identityˡ 1#))) = 
+  let step₁ = ↦*-step ke-suc₁ (k▹v↦*k◃v v-val) in 
+  let step₂ = ↦*-step ke-suc₂ ↦*-refl in 
+    ↦*-trans step₁ step₂
+k▹v↦*k◃v v-fun rewrite sym (identityʳ 1#) = ↦*-step ke-fun ↦*-refl
 
 return-type : K ÷ τ → Type 
 return-type {τ = τ} ε = τ
