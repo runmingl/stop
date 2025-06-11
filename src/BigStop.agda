@@ -20,7 +20,7 @@ data _⇓_↝_ : · ⊢ τ → · ⊢ τ → Effect → Set ℓ where
     ------------------------
     `zero ⇓ `zero ↝ 1# 
 
-  ste-suc-seq : {e e' : · ⊢ Nat} {a : Effect} →
+  ste-suc : {e e' : · ⊢ Nat} {a : Effect} →
       e ⇓ e' ↝ a 
     ------------------------
     → `suc e ⇓ `suc e' ↝ a
@@ -30,26 +30,29 @@ data _⇓_↝_ : · ⊢ τ → · ⊢ τ → Effect → Set ℓ where
     ------------------------
     `fun e ⇓ `fun e ↝ 1#
 
-  ste-case-seq : {e e' : · ⊢ Nat} {e₁ : · ⊢ τ} {e₂ : · # Nat ⊢ τ} {a : Effect} →
-      e ⇓ e' ↝ a
-    ------------------------
-    → `case e e₁ e₂ ⇓ `case e' e₁ e₂ ↝ a
-
-  ste-app-seq : {e₁ e₁' : · ⊢ τ ⇒ σ} {e₂ e₂ : · ⊢ τ} {a : Effect} →
+  ste-app-seq₁ : {e₁ e₁' : · ⊢ τ ⇒ σ} {e₂ : · ⊢ τ} {a : Effect} →
       e₁ ⇓ e₁' ↝ a
     ------------------------
     → `app e₁ e₂ ⇓ `app e₁' e₂ ↝ a 
 
-  ste-app-val₁ : {e₁ : · ⊢ τ ⇒ σ} {e : · # τ ⇒ σ # τ ⊢ σ} {e₂ e₂' : · ⊢ τ} {a b : Effect} →
+  ste-app-seq₂ : {e₁ : · ⊢ τ ⇒ σ} {e : · # τ ⇒ σ # τ ⊢ σ} {e₂ e₂' : · ⊢ τ} {a b : Effect} →
       e₁ ⇓ `fun e ↝ a
     → e₂ ⇓ e₂' ↝ b
     ------------------------
     → `app e₁ e₂ ⇓ `app (`fun e) e₂' ↝ a ∙ b
-  
-  ste-eff-seq : {e e' : · ⊢ τ} {a b : Effect} →
+
+  ste-app : {e₁ : · ⊢ τ ⇒ σ} {e : · # τ ⇒ σ # τ ⊢ σ} {e₂ v₂ : · ⊢ τ} {e' : · ⊢ σ} {a b c : Effect} →
+      e₁ ⇓ `fun e ↝ a
+    → e₂ ⇓ v₂ ↝ b
+    → v₂ val
+    → e [ (`fun e) ][ v₂ ] ⇓ e' ↝ c
+    ------------------------
+    → `app e₁ e₂ ⇓ e' ↝ a ∙ b ∙ c  
+
+  ste-case-seq : {e e' : · ⊢ Nat} {e₁ : · ⊢ τ} {e₂ : · # Nat ⊢ τ} {a : Effect} →
       e ⇓ e' ↝ a
     ------------------------
-    → `eff b e ⇓ `eff b e' ↝ a 
+    → `case e e₁ e₂ ⇓ `case e' e₁ e₂ ↝ a
 
   ste-case-z : {e : · ⊢ Nat} {e₁ e₁' : · ⊢ τ} {e₂ : · # Nat ⊢ τ} {a b : Effect} →
       e ⇓ `zero ↝ a 
@@ -64,18 +67,10 @@ data _⇓_↝_ : · ⊢ τ → · ⊢ τ → Effect → Set ℓ where
     ------------------------
     → `case e e₁ e₂ ⇓ e₂' ↝ a ∙ b
 
-  ste-app : {e₁ : · ⊢ τ ⇒ σ} {e : · # τ ⇒ σ # τ ⊢ σ} {e₂ v₂ : · ⊢ τ} {e' : · ⊢ σ} {a b c : Effect} →
-      e₁ ⇓ `fun e ↝ a
-    → e₂ ⇓ v₂ ↝ b
-    → v₂ val
-    → e [ (`fun e) ][ v₂ ] ⇓ e' ↝ c
-    ------------------------
-    → `app e₁ e₂ ⇓ e' ↝ a ∙ b ∙ c  
-
   ste-eff : {e e' : · ⊢ τ} {a b : Effect} →
-      e ⇓ e' ↝ a
+      e ⇓ e' ↝ b
     ------------------------
-    → `eff b e ⇓ e' ↝ a ∙ b 
+    → `eff a e ⇓ e' ↝ a ∙ b 
 
   ste-stop : {e : · ⊢ τ} →
 
