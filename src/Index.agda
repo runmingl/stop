@@ -1,4 +1,4 @@
-module index where
+module Index where
 
 -- Language definition and typing rules
 import PCF
