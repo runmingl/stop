@@ -93,36 +93,54 @@ _⟪_ {τ} e d = {v : · ⊢ τ} {a : Effect} → e ⇓ v ↝ a → d ⇓ v ↝ 
   ------------------------
   → k ● e ⟪ k ● d 
 ⟪-● ε f H = f H
-⟪-● (K ⨾ suc⟨-⟩) f = {!   !}
-⟪-● (K ⨾ case⟨-⟩ e₁ e₂) f = {!   !}
-⟪-● (K ⨾ app⟨-⟩ e₂) f = {!   !}
-⟪-● (K ⨾ app e₁ ⟨-⟩) f = {!   !}
+⟪-● (K ⨾ suc⟨-⟩) f        = ⟪-● K λ { (be-suc e⇓v) → be-suc (f e⇓v) }
+⟪-● (K ⨾ case⟨-⟩ e₁ e₂) f = ⟪-● K λ { (be-case-z e⇓z e⇓v) → be-case-z (f e⇓z) e⇓v
+                                    ; (be-case-s e⇓s e⇓v) → be-case-s (f e⇓s) e⇓v}
+⟪-● (K ⨾ app⟨-⟩ e₂) f     = ⟪-● K λ { (be-app e⇓f e₂⇓v e⇓v) → be-app (f e⇓f) e₂⇓v e⇓v }
+⟪-● (K ⨾ app e₁ ⟨-⟩) f    = ⟪-● K λ { (be-app e⇓f e₂⇓v e⇓v) → be-app e⇓f (f e₂⇓v) e⇓v}
 
--- ⟪-● (K ⨾ suc⟨-⟩) f =
---   ⟪-● K (λ { (`suc v , a , be-suc e⇓v) → let (v , a , e⇓v , d⇓v) = f (v , a , e⇓v) in `suc v , a , be-suc e⇓v , be-suc d⇓v })
--- ⟪-● (K ⨾ case⟨-⟩ e₁ e₂) f = ⟪-● K λ { (v , _ , be-case-z {a = a} {b = b} p p₁) → 
---     let t = f (`zero , a , p) in 
---     let t₁ = f ({! v  !} , b , {!   !}) in {!   !} , {!   !} , be-case-z p p₁ , {!   !}
---                                     ; (v , a , be-case-s p p₁) → {!   !}}
--- ⟪-● (K ⨾ app⟨-⟩ e₂) f = ⟪-● K (λ { (v , a , p) → let t = {! f (v , a , p)  !} in {!   !} })
--- ⟪-● (K ⨾ app e₁ ⟨-⟩) f = ⟪-● K λ { (v , a , be-app p p₁ p₂) → let t = f ({!  v !} , {!   !} , {!   !}) in {!   !} }
--- goal : (s s' : State) → return s ≡ return s' → Set ℓ
--- goal (k ◃ e) (k' ◃ e') p = e val → k' ● e' ⟪ Eq.subst (λ τ → · ⊢ τ) p (k ● e) 
--- goal (k ▹ e) (k' ◃ e') p = k' ● e' ⟪ Eq.subst (λ τ → · ⊢ τ) p (k ● e)
--- goal (k ▹ e) (k' ▹ e') p = k' ● e' ⟪ Eq.subst (λ τ → · ⊢ τ) p (k ● e)
--- goal (k ◃ e) (k' ▹ e') p = e val → k' ● e' ⟪ Eq.subst (λ τ → · ⊢ τ) p (k ● e)
--- return-≡ : {s s' : State} {a : Effect} → s ↦ s' ↝ a → return s ≡ return s' 
--- return-≡ ke-zero = Eq.refl
--- return-≡ ke-suc₁ = Eq.refl
--- return-≡ ke-suc₂ = Eq.refl
--- return-≡ ke-case = Eq.refl
--- return-≡ ke-case-z = Eq.refl
--- return-≡ ke-case-s = Eq.refl
--- return-≡ ke-fun = Eq.refl
--- return-≡ ke-app₁ = Eq.refl
--- return-≡ ke-app₂ = Eq.refl
--- return-≡ ke-app₃ = Eq.refl
--- return-≡ ke-eff = Eq.refl 
+goal : (s s' : State) → return s ≡ return s' → Set ℓ
+goal (k ◃ e) (k' ◃ e') p = e val → k' ● e' ⟪ Eq.subst (λ τ → · ⊢ τ) p (k ● e) 
+goal (k ▹ e) (k' ◃ e') p = k' ● e' ⟪ Eq.subst (λ τ → · ⊢ τ) p (k ● e)
+goal (k ▹ e) (k' ▹ e') p = k' ● e' ⟪ Eq.subst (λ τ → · ⊢ τ) p (k ● e)
+goal (k ◃ e) (k' ▹ e') p = e val → k' ● e' ⟪ Eq.subst (λ τ → · ⊢ τ) p (k ● e)
+
+return-≡ : {s s' : State} {a : Effect} → s ↦ s' ↝ a → return s ≡ return s' 
+return-≡ ke-zero = Eq.refl
+return-≡ ke-suc₁ = Eq.refl
+return-≡ ke-suc₂ = Eq.refl
+return-≡ ke-case = Eq.refl
+return-≡ ke-case-z = Eq.refl
+return-≡ ke-case-s = Eq.refl
+return-≡ ke-fun = Eq.refl
+return-≡ ke-app₁ = Eq.refl
+return-≡ ke-app₂ = Eq.refl
+return-≡ ke-app₃ = Eq.refl
+return-≡ ke-eff = Eq.refl 
+
+s-⟪-● : {s s' : State} {a : Effect} → (transition : s ↦ s' ↝ a) → goal s s' (return-≡ transition)
+s-⟪-● ke-zero d = d
+s-⟪-● ke-suc₁ d = d
+s-⟪-● ke-suc₂ v-val d = d
+s-⟪-● ke-case d = d
+s-⟪-● (ke-case-z {k = k}) v-zero d = ⟪-● k (λ e₁⇓v → 
+  let step = be-case-z be-zero e₁⇓v in 
+    Eq.subst (λ a → `case `zero _ _ ⇓ _ ↝ a) (identityˡ _) step) 
+  d
+s-⟪-● (ke-case-s {k = k}) (v-suc v-val) d = ⟪-● k (λ e₂⇓v → 
+  let step = be-case-s (be-suc (v⇓v v-val)) e₂⇓v in 
+    Eq.subst (λ a → `case (`suc _) _ _ ⇓ _ ↝ a) (identityˡ _) step) 
+  d
+s-⟪-● ke-fun d = d
+s-⟪-● ke-app₁ = {!   !}
+s-⟪-● ke-app₂ = {!   !}
+s-⟪-● ke-app₃ = {!   !}
+s-⟪-● (ke-eff {k = k}) d = {!   !}
+  -- ⟪-● k (λ e⇓v → 
+--   let step = be-eff e⇓v in 
+--   {!   !}) 
+--   d
+
 
 -- thm : {s s' : State} {a : Effect} → (transition : s ↦ s' ↝ a) → goal s s' (return-≡ transition)
 -- thm ke-zero (v , a , e⇓v) = v , a , e⇓v , e⇓v
