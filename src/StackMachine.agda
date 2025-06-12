@@ -168,3 +168,27 @@ _●_ ε e = e
 (K ⨾ case⟨-⟩ e₁ e₂) ● e = K ● `case e e₁ e₂
 (K ⨾ app⟨-⟩ e₂) ● e = K ● `app e e₂
 (K ⨾ app e₁ ⟨-⟩) ● e = K ● `app e₁ e
+
+mutual 
+  ▹-val : {K K' : Frame} {k : K ÷ τ} {e : · ⊢ τ} {k' : K' ÷ σ} {e' : · ⊢ σ} {a : Effect} →
+      k ▹ e ↦* k' ◃ e' ↝ a 
+    ------------------------
+    → e' val
+  ▹-val (↦*-step ke-zero s) = ◃-val s v-zero
+  ▹-val (↦*-step ke-suc₁ s) = ▹-val s
+  ▹-val (↦*-step ke-case s) = ▹-val s
+  ▹-val (↦*-step ke-fun s)  = ◃-val s v-fun
+  ▹-val (↦*-step ke-app₁ s) = ▹-val s
+  ▹-val (↦*-step ke-eff s)  = ▹-val s
+
+  ◃-val : {K K' : Frame} {k : K ÷ τ} {e : · ⊢ τ} {k' : K' ÷ σ} {e' : · ⊢ σ} {a : Effect} → 
+      k ◃ e ↦* k' ◃ e' ↝ a 
+    → e val
+    ------------------------
+    → e' val
+  ◃-val  ↦*-refl v-val                      = v-val
+  ◃-val (↦*-step ke-suc₂ s) v-val           = ◃-val s (v-suc v-val)
+  ◃-val (↦*-step ke-case-z s) v-zero        = ▹-val s
+  ◃-val (↦*-step ke-case-s s) (v-suc v-val) = ▹-val s
+  ◃-val (↦*-step ke-app₂ s) v-fun           = ▹-val s
+  ◃-val (↦*-step ke-app₃ s) v-val           = ▹-val s

@@ -106,17 +106,17 @@ goal (k ▹ e) (k' ▹ e') p = k' ● e' ⟪ Eq.subst (λ τ → · ⊢ τ) p (k
 goal (k ◃ e) (k' ▹ e') p = e val → k' ● e' ⟪ Eq.subst (λ τ → · ⊢ τ) p (k ● e)
 
 return-≡ : {s s' : State} {a : Effect} → s ↦ s' ↝ a → return s ≡ return s' 
-return-≡ ke-zero = Eq.refl
-return-≡ ke-suc₁ = Eq.refl
-return-≡ ke-suc₂ = Eq.refl
-return-≡ ke-case = Eq.refl
+return-≡ ke-zero   = Eq.refl
+return-≡ ke-suc₁   = Eq.refl
+return-≡ ke-suc₂   = Eq.refl
+return-≡ ke-case   = Eq.refl
 return-≡ ke-case-z = Eq.refl
 return-≡ ke-case-s = Eq.refl
-return-≡ ke-fun = Eq.refl
-return-≡ ke-app₁ = Eq.refl
-return-≡ ke-app₂ = Eq.refl
-return-≡ ke-app₃ = Eq.refl
-return-≡ ke-eff = Eq.refl 
+return-≡ ke-fun    = Eq.refl
+return-≡ ke-app₁   = Eq.refl
+return-≡ ke-app₂   = Eq.refl
+return-≡ ke-app₃   = Eq.refl
+return-≡ ke-eff    = Eq.refl 
 
 s-⟪-● : {s s' : State} {a : Effect} → (transition : s ↦ s' ↝ a) → goal s s' (return-≡ transition)
 s-⟪-● ke-zero d = d
@@ -140,32 +140,3 @@ s-⟪-● (ke-eff {k = k}) d = {!   !}
 --   let step = be-eff e⇓v in 
 --   {!   !}) 
 --   d
-
-
--- thm : {s s' : State} {a : Effect} → (transition : s ↦ s' ↝ a) → goal s s' (return-≡ transition)
--- thm ke-zero (v , a , e⇓v) = v , a , e⇓v , e⇓v
--- thm ke-suc₁ (v , a , e⇓v) = v , a , e⇓v , e⇓v
--- thm ke-suc₂ v-val (v , a , e⇓v) = v , a , e⇓v , e⇓v
--- thm ke-case (v , a , e⇓v) = v , a , e⇓v , e⇓v 
--- thm (ke-case-z {k = k}) v-zero = ⟪-● k λ (v , a , e⇓v) → v , a , e⇓v , Eq.subst (λ a → _ ⇓ _ ↝ a) (identityˡ a) (be-case-z be-zero e⇓v)
--- thm (ke-case-s {k = k}) (v-suc v-val) = ⟪-● k (λ (v , a , e⇓v) → v , a , e⇓v , Eq.subst (λ a → _ ⇓ _ ↝ a) (identityˡ a) (be-case-s (v⇓v (v-suc v-val)) e⇓v))
--- thm ke-fun (v , a , e⇓v) = v , a , e⇓v , e⇓v
--- thm ke-app₁ (v , a , e⇓v) = v , a , e⇓v , e⇓v
--- thm ke-app₂ v-fun (v , a , e⇓v) = v , a , e⇓v , e⇓v
--- thm ke-app₃ v-val = {!   !}
--- thm (ke-eff {k = k}) = ⟪-● k λ (v , a , e⇓v) → v , a , e⇓v , Eq.subst (λ a → _ ⇓ _ ↝ a) (identityˡ a) {! be-eff  !} 
--- mutual
---   ▹-val : {K : Frame} {k : K ÷ τ} {e : · ⊢ τ} {k' : K ÷ σ} {e' : · ⊢ σ} {a : Effect}→
---       k ▹ e ↦* k' ◃ e' ↝ a 
---     ------------------------
---     → e' val
---   ▹-val (↦*-step {s' = x₁ ◃ x₂} x d) = ◃-val {! d  !} {!   !}
---   ▹-val (↦*-step {s' = x₁ ▹ x₂} x d) = ▹-val {! d  !}
---   ◃-val : {K : Frame} {k : K ÷ τ} {e : · ⊢ τ} {k' : K ÷ σ} {e' : · ⊢ σ} {a : Effect} → 
---       k ◃ e ↦* k' ◃ e' ↝ a 
---     → e val
---     ------------------------
---     → e' val
---   ◃-val ↦*-refl v-val = {!   !}
---   ◃-val (↦*-step x d) v-val = {!   !} 
-
