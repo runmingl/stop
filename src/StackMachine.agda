@@ -32,8 +32,8 @@ data _⇝_ : Type → Type → Set ℓ where
     ------------------------
     → τ ⇒ σ ⇝ σ
 
-  app_⟨-⟩ : 
-      · ⊢ τ ⇒ σ 
+  app⟨fun_⟩⟨-⟩ : 
+      · # τ ⇒ σ # τ ⊢ σ 
     ------------------------
     → τ ⇝ σ
 
@@ -102,12 +102,12 @@ data _↦_↝_ : State → State → Effect → Set ℓ where
   ke-app₂ : {k : K ÷ σ} {e : · # τ ⇒ σ # τ ⊢ σ} {e₂ : · ⊢ τ} →
 
     ------------------------
-    k ⨾ app⟨-⟩ e₂ ◃ `fun e ↦ k ⨾ app (`fun e) ⟨-⟩ ▹ e₂ ↝ 1#
+    k ⨾ app⟨-⟩ e₂ ◃ `fun e ↦ k ⨾ app⟨fun e ⟩⟨-⟩ ▹ e₂ ↝ 1#
 
   ke-app₃ : {k : K ÷ σ} {e : · # τ ⇒ σ # τ ⊢ σ} {v : · ⊢ τ} →
       
     ------------------------
-   k ⨾ app (`fun e) ⟨-⟩ ◃ v ↦ k ▹ e [ (`fun e) ][ v ] ↝ 1#
+   k ⨾ app⟨fun e ⟩⟨-⟩ ◃ v ↦ k ▹ e [ (`fun e) ][ v ] ↝ 1#
 
   ke-eff : {k : K ÷ τ} {e : · ⊢ τ} {a : Effect} →
     
@@ -157,17 +157,13 @@ return-type : K ÷ τ → Type
 return-type {τ = τ} ε = τ
 return-type (K ⨾ F)   = return-type K
 
-return : State → Type 
-return (K ◃ e) = return-type K
-return (K ▹ e) = return-type K
-
 infix 5 _●_
 _●_ : (k : K ÷ τ) → · ⊢ τ → · ⊢ return-type k
 _●_ ε e = e
 (K ⨾ suc⟨-⟩) ● e = K ● `suc e
 (K ⨾ case⟨-⟩ e₁ e₂) ● e = K ● `case e e₁ e₂
 (K ⨾ app⟨-⟩ e₂) ● e = K ● `app e e₂
-(K ⨾ app e₁ ⟨-⟩) ● e = K ● `app e₁ e
+(K ⨾ app⟨fun e' ⟩⟨-⟩) ● e = K ● `app (`fun e') e
 
 mutual 
   ▹-val : {K K' : Frame} {k : K ÷ τ} {e : · ⊢ τ} {k' : K' ÷ σ} {e' : · ⊢ σ} {a : Effect} →

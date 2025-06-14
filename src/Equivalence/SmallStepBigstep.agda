@@ -83,5 +83,10 @@ private
     (↦*-trans step₁ step₂) step₃'
 ⇓→↦* (be-eff e⇓v↝a) = ↦*-step se-eff (⇓→↦* e⇓v↝a)
 
-↦*⇔⇓ : {e v : · ⊢ τ} {a : Effect} → (v val) × (e ↦* v ↝ a) ⇔ e ⇓ v ↝ a
+↦*⇔⇓ : {e v : · ⊢ τ} {a : Effect} → 
+    (v val) × (e ↦* v ↝ a) 
+  ------------------------
+  ⇔ 
+  ------------------------
+    e ⇓ v ↝ a
 ↦*⇔⇓ = (λ (v-val , e↦*v↝a) → ↦*→⇓ v-val e↦*v↝a) , λ e⇓v↝a → ⇓-val e⇓v↝a , ⇓→↦* e⇓v↝a 

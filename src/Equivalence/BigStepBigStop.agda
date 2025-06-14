@@ -45,5 +45,10 @@ private
 ↧→⇓ (ste-eff e↧v) v-val                   = be-eff (↧→⇓ e↧v v-val)
 ↧→⇓ ste-stop v-val                        = v⇓v v-val
 
-⇓⇔↧ : {e v : · ⊢ τ} {a : Effect} → (e ⇓ v ↝ a) ⇔ (v val) × (e ↧ v ↝ a)
+⇓⇔↧ : {e v : · ⊢ τ} {a : Effect} → 
+    e ⇓ v ↝ a 
+  ------------------------
+  ⇔ 
+  ------------------------
+    (v val) × (e ↧ v ↝ a)
 ⇓⇔↧ = (λ e⇓v → ⇓-val e⇓v , ⇓→↧ e⇓v) , λ (v-val , e↧v) → ↧→⇓ e↧v v-val

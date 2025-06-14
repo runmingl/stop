@@ -82,6 +82,12 @@ effect-arithimic₂ a b c =
   let step₃ = ↦*-step ke-app₃ (⇓→↦* e⇓v₁ k) in
     ↦*-trans step₁ (↦*-trans step₂ step₃)
 ⇓→↦* (be-eff e⇓v) k = ↦*-step ke-eff (⇓→↦* e⇓v k)
+
+⇓→↦*-ε : {e v : · ⊢ τ} {a : Effect} → 
+      e ⇓ v ↝ a  
+    ------------------------
+    → ε ▹ e ↦* ε ◃ v ↝ a
+⇓→↦*-ε e⇓v = ⇓→↦* e⇓v ε
   
 infix 4 _⟪_∣_
 _⟪_∣_ : · ⊢ τ → · ⊢ τ → Effect → Set ℓ 
@@ -96,62 +102,98 @@ _⟪_∣_ {τ} e d a = {v : · ⊢ τ} {b : Effect} → (c : Effect) →
   → e ⟪ d ∣ a
   ------------------------
   → k ● e ⟪ k ● d ∣ a
-⟪-● ε f H = f H
+⟪-● ε f = f
 ⟪-● {a = b} (K ⨾ suc⟨-⟩) f
   = ⟪-● K (λ { c' c'≡a'∙b (be-suc e⇓v) → be-suc (f c' c'≡a'∙b e⇓v) }) 
 ⟪-● {e = e} {d = d} {a = b} (K ⨾ case⟨-⟩ e₁ e₂) f 
   = ⟪-● K (λ { c' c'≡a'∙b (be-case-z {a = a} {b = c} e⇓z e⇓v) → 
-            let step = be-case-z (f (b ∙ a) Eq.refl e⇓z) e⇓v in 
-              Eq.subst (λ a → `case d _ _ ⇓ _ ↝ a) (Eq.trans (assoc b a c) (sym c'≡a'∙b)) step
-            ; c' c'≡a'∙b (be-case-s {a = a} {b = c} e⇓s e⇓v) → 
-            let step = be-case-s (f (b ∙ a) Eq.refl e⇓s) e⇓v in 
-              Eq.subst (λ a → `case d _ _ ⇓ _ ↝ a) (Eq.trans (assoc b a c) (sym c'≡a'∙b)) step }) 
+      let step = be-case-z (f (b ∙ a) Eq.refl e⇓z) e⇓v in 
+        Eq.subst 
+          (λ a → `case d _ _ ⇓ _ ↝ a) 
+          (Eq.trans (assoc b a c) (sym c'≡a'∙b)) 
+          step
+      ; c' c'≡a'∙b (be-case-s {a = a} {b = c} e⇓s e⇓v) → 
+      let step = be-case-s (f (b ∙ a) Eq.refl e⇓s) e⇓v in 
+        Eq.subst 
+          (λ a → `case d _ _ ⇓ _ ↝ a) 
+          (Eq.trans (assoc b a c) (sym c'≡a'∙b)) 
+          step }) 
 ⟪-● {e = e} {d = d} {a = b} (K ⨾ app⟨-⟩ e₂) f 
   = ⟪-● K (λ { c' c'≡a'∙b (be-app {a = a} e⇓f e₂⇓v e⇓v) → 
-            let step = be-app (f (b ∙ a) Eq.refl e⇓f) e₂⇓v e⇓v in 
-              Eq.subst (λ a → `app d _ ⇓ _ ↝ a) (Eq.trans (Eq.trans (assoc (b ∙ _) _ _) (Eq.trans (assoc _ _ _) (cong (λ a → b ∙ a) (sym (assoc _ _ _))))) (sym c'≡a'∙b)) step })
-⟪-● {e = e} {d = d} {a = b} (K ⨾ app e₁ ⟨-⟩) f _ _ 
-  = ⟪-● K (λ { c' c'≡a'∙b (be-app {a = a} {b = c} {c = g} e⇓f e₂⇓v e⇓v) → 
-            let step = be-app e⇓f ({!   !}) e⇓v in 
-              {!   !} }) {!  1# !} {!   !}
--- ⟪-● (K ⨾ app e₁ ⟨-⟩) f    = ⟪-● K λ { (be-app e⇓f e₂⇓v e⇓v) → be-app e⇓f (f e₂⇓v) e⇓v}
+      let step = be-app (f (b ∙ a) Eq.refl e⇓f) e₂⇓v e⇓v in 
+        Eq.subst 
+          (λ a → `app d _ ⇓ _ ↝ a) 
+          (Eq.trans (Eq.trans (assoc (b ∙ _) _ _) (Eq.trans (assoc _ _ _) (cong (λ a → b ∙ a) (sym (assoc _ _ _))))) (sym c'≡a'∙b)) 
+          step })
+⟪-● {e = e} {d = d} {a = b} (K ⨾ app⟨fun e₁ ⟩⟨-⟩) f 
+  = ⟪-● K λ { c' c'≡a'∙b (be-app {a = a} {b = c} {c = g} be-fun e₂⇓v e⇓v) → 
+      let step = be-app be-fun (f (b ∙ c) Eq.refl e₂⇓v) e⇓v in 
+        Eq.subst 
+          (λ a → `app (`fun _) d ⇓ _ ↝ a) 
+          (Eq.trans (cong (λ a → a ∙ g) (identityˡ (b ∙ c))) (Eq.trans (assoc b c g) (Eq.trans (cong (λ a → b ∙ (a ∙ g)) (sym (identityˡ c))) (sym c'≡a'∙b)))) 
+          step }
 
-goal : (s s' : State) → Effect → return s ≡ return s' → Set ℓ
-goal (k ◃ e) (k' ◃ e') a p = e val → k' ● e' ⟪ Eq.subst (λ τ → · ⊢ τ) p (k ● e) ∣ a 
-goal (k ▹ e) (k' ◃ e') a p = k' ● e' ⟪ Eq.subst (λ τ → · ⊢ τ) p (k ● e) ∣ a 
-goal (k ▹ e) (k' ▹ e') a p = k' ● e' ⟪ Eq.subst (λ τ → · ⊢ τ) p (k ● e) ∣ a 
-goal (k ◃ e) (k' ▹ e') a p = e val → k' ● e' ⟪ Eq.subst (λ τ → · ⊢ τ) p (k ● e) ∣ a
+mutual 
+  ▹-↦*→⇓ : {K : Frame} {k : K ÷ τ} {e : · ⊢ τ} {v : · ⊢ return-type k} {a : Effect} → 
+      k ▹ e ↦* ε ◃ v ↝ a  
+    ------------------------
+    → k ● e ⇓ v ↝ a
+  ▹-↦*→⇓ {k = ε} (↦*-step {b = b} ke-zero s) rewrite identityˡ b = ◃-↦*→⇓-ε s v-zero
+  ▹-↦*→⇓ {k = k ⨾ F} (↦*-step {b = b} ke-zero s) rewrite identityˡ b = ◃-↦*→⇓ s v-zero 
+  ▹-↦*→⇓ (↦*-step {b = b} ke-suc₁ s) rewrite identityˡ b = ▹-↦*→⇓ s
+  ▹-↦*→⇓ (↦*-step {b = b} ke-case s) rewrite identityˡ b = ▹-↦*→⇓ s
+  ▹-↦*→⇓ {k = ε} (↦*-step {b = b} ke-fun s) rewrite identityˡ b = ◃-↦*→⇓-ε s v-fun 
+  ▹-↦*→⇓ {k = k ⨾ F} (↦*-step {b = b} ke-fun s) rewrite identityˡ b = ◃-↦*→⇓ s v-fun 
+  ▹-↦*→⇓ (↦*-step {b = b} ke-app₁ s) rewrite identityˡ b = ▹-↦*→⇓ s
+  ▹-↦*→⇓ {k = k} (↦*-step {a = a} {b = b} ke-eff s) 
+    = ⟪-● k 
+      (λ c' c'≡a∙b' e⇓v → 
+        let step = be-eff e⇓v in 
+          Eq.subst (λ a → `eff _ _ ⇓ _ ↝ a) (sym c'≡a∙b') step) 
+      (a ∙ b) Eq.refl (▹-↦*→⇓ s)
 
-return-≡ : {s s' : State} {a : Effect} → s ↦ s' ↝ a → return s ≡ return s' 
-return-≡ ke-zero   = Eq.refl
-return-≡ ke-suc₁   = Eq.refl
-return-≡ ke-suc₂   = Eq.refl
-return-≡ ke-case   = Eq.refl
-return-≡ ke-case-z = Eq.refl
-return-≡ ke-case-s = Eq.refl
-return-≡ ke-fun    = Eq.refl
-return-≡ ke-app₁   = Eq.refl
-return-≡ ke-app₂   = Eq.refl
-return-≡ ke-app₃   = Eq.refl
-return-≡ ke-eff    = Eq.refl 
+  ◃-↦*→⇓-ε : {e : · ⊢ τ} {v : · ⊢ τ} {a : Effect} → 
+      ε ◃ e ↦* ε ◃ v ↝ a
+    → e val
+    ------------------------
+    → ε ● e ⇓ v ↝ a
+  ◃-↦*→⇓-ε ↦*-refl e-val = v⇓v e-val
 
-s-⟪-● : {s s' : State} {a : Effect} → (transition : s ↦ s' ↝ a) → goal s s' a (return-≡ transition)
-s-⟪-● ke-zero b' b'≡b e⇓v rewrite Eq.trans b'≡b (identityˡ _) = e⇓v
-s-⟪-● ke-suc₁ b' b'≡b e⇓v rewrite Eq.trans b'≡b (identityˡ _) = e⇓v
-s-⟪-● ke-suc₂ v-val b' b'≡b e⇓v rewrite Eq.trans b'≡b (identityˡ _) = e⇓v
-s-⟪-● ke-case b' b'≡b e⇓v rewrite Eq.trans b'≡b (identityˡ _) = e⇓v
-s-⟪-● (ke-case-z {k = k}) v-zero = ⟪-● k (λ b' b'≡b e₁⇓v → 
-  let step = be-case-z be-zero e₁⇓v in 
-    Eq.subst (λ a → `case `zero _ _ ⇓ _ ↝ a) (sym b'≡b) step) 
-s-⟪-● (ke-case-s {k = k}) (v-suc v-val) = ⟪-● k (λ b' b'≡b e₂⇓v → 
-  let step = be-case-s (be-suc (v⇓v v-val)) e₂⇓v in 
-    Eq.subst (λ a → `case (`suc _) _ _ ⇓ _ ↝ a) (sym b'≡b) step) 
-s-⟪-● ke-fun b' b'≡b e⇓v rewrite Eq.trans b'≡b (identityˡ _) = e⇓v
-s-⟪-● (ke-app₁ {k = k}) b' b'≡b e⇓v rewrite Eq.trans b'≡b (identityˡ _) = e⇓v
-s-⟪-● (ke-app₂ {k = k}) v-fun b' b'≡b e⇓v rewrite Eq.trans b'≡b (identityˡ _) = e⇓v
-s-⟪-● (ke-app₃ {k = k} {e = e}) v-val = ⟪-● k (λ c' c'≡a∙b' e⇓v → 
-  let step = be-app (be-fun {e = e}) (v⇓v v-val) e⇓v in 
-    Eq.subst (λ a → `app (`fun _) _ ⇓ _ ↝ a) (Eq.trans (Eq.cong (λ a → a ∙ _) (identityʳ 1#)) (sym c'≡a∙b')) step)
-s-⟪-● (ke-eff {k = k}) = ⟪-● k (λ c' c'≡a∙b' e⇓v → 
-  let step = be-eff e⇓v in 
-    Eq.subst (λ a → `eff _ _ ⇓ _ ↝ a) (sym c'≡a∙b') step)
+  ◃-↦*→⇓ : {K : Frame} {k : K ÷ σ} {F : τ ⇝ σ} {e : · ⊢ τ} {v : · ⊢ return-type k} {a : Effect} → 
+      k ⨾ F ◃ e ↦* ε ◃ v ↝ a  
+    → e val
+    ------------------------
+    → (k ⨾ F) ● e ⇓ v ↝ a
+  ◃-↦*→⇓ {k = ε} (↦*-step {b = b} ke-suc₂ s) e-val rewrite identityˡ b = ◃-↦*→⇓-ε s (v-suc e-val)
+  ◃-↦*→⇓ {k = k ⨾ F} (↦*-step {b = b} ke-suc₂ s) e-val rewrite identityˡ b = ◃-↦*→⇓ s (v-suc e-val)
+  ◃-↦*→⇓ {k = k} (↦*-step {b = b} ke-case-z s) v-zero 
+    = ⟪-● k 
+      (λ b' b'≡b e₁⇓v → 
+        let step = be-case-z be-zero e₁⇓v in 
+          Eq.subst (λ a → `case `zero _ _ ⇓ _ ↝ a) (sym b'≡b) step) 
+      (1# ∙ b) Eq.refl (▹-↦*→⇓ s)
+  ◃-↦*→⇓ {k = k} (↦*-step {b = b} ke-case-s s) (v-suc v-val) 
+    = ⟪-● k (λ b' b'≡b e₂⇓v → 
+        let step = be-case-s (be-suc (v⇓v v-val)) e₂⇓v in 
+          Eq.subst (λ a → `case (`suc _) _ _ ⇓ _ ↝ a) (sym b'≡b) step)
+      (1# ∙ b) Eq.refl (▹-↦*→⇓ s)
+  ◃-↦*→⇓ {k = k} (↦*-step {b = b} ke-app₂ s) v-fun rewrite identityˡ b = ▹-↦*→⇓ s
+  ◃-↦*→⇓ {k = k} (↦*-step {b = b} ke-app₃ s) e-val 
+    = ⟪-● k (λ c' c'≡a∙b' e⇓v → 
+        let step = be-app be-fun (v⇓v e-val) e⇓v in 
+          Eq.subst (λ a → `app (`fun _) _ ⇓ _ ↝ a) (Eq.trans (Eq.cong (λ a → a ∙ _) (identityʳ 1#)) (sym c'≡a∙b')) step) 
+      (1# ∙ b) Eq.refl (▹-↦*→⇓ s)
+
+↦*→⇓-ε : {e v : · ⊢ τ} {a : Effect} → 
+      ε ▹ e ↦* ε ◃ v ↝ a
+    ------------------------
+    → e ⇓ v ↝ a  
+↦*→⇓-ε e↦*v = ▹-↦*→⇓ e↦*v
+
+↦*⇔⇓ : {e v : · ⊢ τ} {a : Effect} → 
+      ε ▹ e ↦* ε ◃ v ↝ a
+    ------------------------
+    ⇔ 
+    ------------------------
+      e ⇓ v ↝ a 
+↦*⇔⇓ = ↦*→⇓-ε , ⇓→↦*-ε
