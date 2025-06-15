@@ -138,12 +138,10 @@ mutual
       k ▹ e ↦* ε ◃ v ↝ a  
     ------------------------
     → k ● e ⇓ v ↝ a
-  ▹-↦*→⇓ {k = ε} (↦*-step {b = b} ke-zero s) rewrite identityˡ b = ◃-↦*→⇓-ε s v-zero
-  ▹-↦*→⇓ {k = k ⨾ F} (↦*-step {b = b} ke-zero s) rewrite identityˡ b = ◃-↦*→⇓ s v-zero 
+  ▹-↦*→⇓ (↦*-step {b = b} ke-zero s) rewrite identityˡ b = ◃-↦*→⇓ s v-zero 
   ▹-↦*→⇓ (↦*-step {b = b} ke-suc₁ s) rewrite identityˡ b = ▹-↦*→⇓ s
   ▹-↦*→⇓ (↦*-step {b = b} ke-case s) rewrite identityˡ b = ▹-↦*→⇓ s
-  ▹-↦*→⇓ {k = ε} (↦*-step {b = b} ke-fun s) rewrite identityˡ b = ◃-↦*→⇓-ε s v-fun 
-  ▹-↦*→⇓ {k = k ⨾ F} (↦*-step {b = b} ke-fun s) rewrite identityˡ b = ◃-↦*→⇓ s v-fun 
+  ▹-↦*→⇓ (↦*-step {b = b} ke-fun s) rewrite identityˡ b = ◃-↦*→⇓ s v-fun 
   ▹-↦*→⇓ (↦*-step {b = b} ke-app₁ s) rewrite identityˡ b = ▹-↦*→⇓ s
   ▹-↦*→⇓ {k = k} (↦*-step {a = a} {b = b} ke-eff s) 
     = ⟪-● k 
@@ -152,48 +150,41 @@ mutual
           Eq.subst (λ a → `eff _ _ ⇓ _ ↝ a) (sym c'≡a∙b') step) 
       (a ∙ b) Eq.refl (▹-↦*→⇓ s)
 
-  ◃-↦*→⇓-ε : {e : · ⊢ τ} {v : · ⊢ τ} {a : Effect} → 
-      ε ◃ e ↦* ε ◃ v ↝ a
+  ◃-↦*→⇓ : {K : Frame} {k : K ÷ τ} {e : · ⊢ τ} {v : · ⊢ return-type k} {a : Effect} → 
+      k ◃ e ↦* ε ◃ v ↝ a
     → e val
     ------------------------
-    → ε ● e ⇓ v ↝ a
-  ◃-↦*→⇓-ε ↦*-refl e-val = v⇓v e-val
-
-  ◃-↦*→⇓ : {K : Frame} {k : K ÷ σ} {F : τ ⇝ σ} {e : · ⊢ τ} {v : · ⊢ return-type k} {a : Effect} → 
-      k ⨾ F ◃ e ↦* ε ◃ v ↝ a  
-    → e val
-    ------------------------
-    → (k ⨾ F) ● e ⇓ v ↝ a
-  ◃-↦*→⇓ {k = ε} (↦*-step {b = b} ke-suc₂ s) e-val rewrite identityˡ b = ◃-↦*→⇓-ε s (v-suc e-val)
+    → k ● e ⇓ v ↝ a
+  ◃-↦*→⇓ {k = ε} ↦*-refl e-val = v⇓v e-val
   ◃-↦*→⇓ {k = k ⨾ F} (↦*-step {b = b} ke-suc₂ s) e-val rewrite identityˡ b = ◃-↦*→⇓ s (v-suc e-val)
-  ◃-↦*→⇓ {k = k} (↦*-step {b = b} ke-case-z s) v-zero 
+  ◃-↦*→⇓ {k = k ⨾ F} (↦*-step {b = b} ke-case-z s) e-val 
     = ⟪-● k 
       (λ b' b'≡b e₁⇓v → 
         let step = be-case-z be-zero e₁⇓v in 
           Eq.subst (λ a → `case `zero _ _ ⇓ _ ↝ a) (sym b'≡b) step) 
       (1# ∙ b) Eq.refl (▹-↦*→⇓ s)
-  ◃-↦*→⇓ {k = k} (↦*-step {b = b} ke-case-s s) (v-suc v-val) 
+  ◃-↦*→⇓ {k = k ⨾ F} (↦*-step {b = b} ke-case-s s) (v-suc v-val) 
     = ⟪-● k (λ b' b'≡b e₂⇓v → 
         let step = be-case-s (be-suc (v⇓v v-val)) e₂⇓v in 
           Eq.subst (λ a → `case (`suc _) _ _ ⇓ _ ↝ a) (sym b'≡b) step)
       (1# ∙ b) Eq.refl (▹-↦*→⇓ s)
-  ◃-↦*→⇓ {k = k} (↦*-step {b = b} ke-app₂ s) v-fun rewrite identityˡ b = ▹-↦*→⇓ s
-  ◃-↦*→⇓ {k = k} (↦*-step {b = b} ke-app₃ s) e-val 
+  ◃-↦*→⇓ {k = k ⨾ F} (↦*-step {b = b} ke-app₂ s) v-fun rewrite identityˡ b = ▹-↦*→⇓ s
+  ◃-↦*→⇓ {k = k ⨾ F} (↦*-step {b = b} ke-app₃ s) e-val
     = ⟪-● k (λ c' c'≡a∙b' e⇓v → 
         let step = be-app be-fun (v⇓v e-val) e⇓v in 
           Eq.subst (λ a → `app (`fun _) _ ⇓ _ ↝ a) (Eq.trans (Eq.cong (λ a → a ∙ _) (identityʳ 1#)) (sym c'≡a∙b')) step) 
       (1# ∙ b) Eq.refl (▹-↦*→⇓ s)
 
 ↦*→⇓-ε : {e v : · ⊢ τ} {a : Effect} → 
-      ε ▹ e ↦* ε ◃ v ↝ a
-    ------------------------
-    → e ⇓ v ↝ a  
+    ε ▹ e ↦* ε ◃ v ↝ a
+  ------------------------
+  → e ⇓ v ↝ a  
 ↦*→⇓-ε e↦*v = ▹-↦*→⇓ e↦*v
 
 ↦*⇔⇓ : {e v : · ⊢ τ} {a : Effect} → 
-      ε ▹ e ↦* ε ◃ v ↝ a
-    ------------------------
-    ⇔ 
-    ------------------------
-      e ⇓ v ↝ a 
+    ε ▹ e ↦* ε ◃ v ↝ a
+  ------------------------
+  ⇔ 
+  ------------------------
+    e ⇓ v ↝ a 
 ↦*⇔⇓ = ↦*→⇓-ε , ⇓→↦*-ε

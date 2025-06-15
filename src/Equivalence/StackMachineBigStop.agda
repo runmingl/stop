@@ -96,7 +96,7 @@ effect-arithimic₂ a b c =
 ⇓→↦*s (ste-fun {e = e}) k = k ▹ `fun e , ↦*-refl
 ⇓→↦*s (ste-app-seq₁ {a = a} e⇓e') k with ⇓→↦*s e⇓e' (k ⨾ app⟨-⟩ _)
 ... | s , k'▹e↦*s = s , Eq.subst (λ a → k ▹ `app _ _ ↦* s ↝ a) (identityˡ a) (↦*-step ke-app₁ k'▹e↦*s)
-⇓→↦*s (ste-app-seq₂ {a = a} {b = b} e⇓f e⇓e'') k with ⇓→↦*s e⇓e'' (k ⨾ app _ ⟨-⟩)
+⇓→↦*s (ste-app-seq₂ {a = a} {b = b} e⇓f e⇓e'') k with ⇓→↦*s e⇓e'' (k ⨾ _)
 ... | s , k'▹e↦*s rewrite sym (effect-arithimic₁ a b) =   
   let step₁ = ↦*-step ke-app₁ (⇓→↦* e⇓f v-fun (k ⨾ app⟨-⟩ _)) in 
   let step₂ = ↦*-step ke-app₂ k'▹e↦*s in 
@@ -104,7 +104,7 @@ effect-arithimic₂ a b c =
 ⇓→↦*s (ste-app {a = a} {b = b} {c = c} e⇓f e₂⇓v₂ v₂-val e⇓v₁) k with ⇓→↦*s e⇓v₁ k 
 ... | s , k'▹e↦*s rewrite sym (effect-arithimic₂ a b c) = 
   let step₁ = ↦*-step ke-app₁ (⇓→↦* e⇓f v-fun (k ⨾ app⟨-⟩ _)) in 
-  let step₂ = ↦*-step ke-app₂ (⇓→↦* e₂⇓v₂ v₂-val (k ⨾ app _ ⟨-⟩)) in
+  let step₂ = ↦*-step ke-app₂ (⇓→↦* e₂⇓v₂ v₂-val (k ⨾ _)) in
   let step₃ = ↦*-step ke-app₃ k'▹e↦*s in
     s , ↦*-trans step₁ (↦*-trans step₂ step₃)
 ⇓→↦*s (ste-case-seq {a = a} e⇓e') k with ⇓→↦*s e⇓e' (k ⨾ case⟨-⟩ _ _)
@@ -122,3 +122,157 @@ effect-arithimic₂ a b c =
 ⇓→↦*s (ste-eff {e' = e'} e⇓e') k with ⇓→↦*s e⇓e' k 
 ... | s , k▹e↦*s = s , ↦*-step ke-eff k▹e↦*s
 ⇓→↦*s (ste-stop {e = e}) k = k ▹ e , ↦*-refl 
+
+⇓→↦*-ε : {e v : · ⊢ τ} {a : Effect} → 
+    e ⇓ v ↝ a 
+  → v val 
+  ------------------------
+  → ε ▹ e ↦* ε ◃ v ↝ a
+⇓→↦*-ε e⇓v v-val = ⇓→↦* e⇓v v-val ε
+
+infix 4 _⟪_∣_
+_⟪_∣_ : · ⊢ τ → · ⊢ τ → Effect → Set ℓ 
+_⟪_∣_ {τ} e d a = {e' : · ⊢ τ} {b : Effect} → (c : Effect) →  
+    c ≡ a ∙ b 
+  → e ⇓ e' ↝ b 
+  ------------------------
+  → d ⇓ e' ↝ c
+
+⟪-● : {K : Frame} {e d : · ⊢ τ} {a : Effect} →
+    (k : K ÷ τ) 
+  → e ⟪ d ∣ a
+  ------------------------
+  → k ● e ⟪ k ● d ∣ a
+⟪-● ε f = f
+⟪-● {a = b} (K ⨾ suc⟨-⟩) f
+  = ⟪-● K λ { c' c'≡a'∙b (ste-suc e⇓e') → ste-suc (f c' c'≡a'∙b e⇓e')
+            ; c' c'≡a'∙b ste-stop → ste-suc (f c' c'≡a'∙b ste-stop) }
+⟪-● {e = e} {d = d} {a = b} (K ⨾ case⟨-⟩ e₁ e₂) f 
+  = ⟪-● K λ { c' c'≡a'∙b (ste-case-seq e⇓e') → ste-case-seq (f c' c'≡a'∙b e⇓e')
+            ; c' c'≡a'∙b (ste-case-z {a = a} {b = c} e⇓z e⇓e') → 
+          let step = ste-case-z (f (b ∙ a) Eq.refl e⇓z) e⇓e' in  
+            Eq.subst 
+              (λ a → `case d _ _ ⇓ _ ↝ a) 
+              (Eq.trans (assoc b a c) (sym c'≡a'∙b)) 
+              step
+            ; c' c'≡a'∙b (ste-case-s {a = a} {b = c} e⇓s v-val e⇓e') → 
+          let step = ste-case-s (f (b ∙ a) Eq.refl e⇓s) v-val e⇓e' in 
+            Eq.subst 
+              (λ a → `case d _ _ ⇓ _ ↝ a) 
+              (Eq.trans (assoc b a c) (sym c'≡a'∙b)) 
+              step
+            ; c' c'≡a'∙b ste-stop → ste-case-seq (f c' c'≡a'∙b ste-stop) }
+⟪-● {e = e} {d = d} {a = b} (K ⨾ app⟨-⟩ e₂) f 
+  = ⟪-● K λ { c' c'≡a'∙b (ste-app-seq₁ e⇓e') → ste-app-seq₁ (f c' c'≡a'∙b e⇓e')
+            ; c' c'≡a'∙b (ste-app-seq₂ {a = a} {b = c} e⇓f e⇓e') → 
+          let step = ste-app-seq₂ (f (b ∙ a) Eq.refl e⇓f) e⇓e' in 
+            Eq.subst 
+              (λ a → `app d _ ⇓ `app (`fun _) _ ↝ a) 
+              (Eq.trans (assoc b a c) (sym c'≡a'∙b)) 
+              step
+            ; c' c'≡a'∙b (ste-app {a = a} e⇓f e₂⇓v v-val e⇓e') → 
+          let step = ste-app (f (b ∙ a) Eq.refl e⇓f) e₂⇓v v-val e⇓e' in 
+            Eq.subst 
+              (λ a → `app d _ ⇓ _ ↝ a) 
+              (Eq.trans (Eq.trans (assoc (b ∙ _) _ _) (Eq.trans (assoc _ _ _) (cong (λ a → b ∙ a) (sym (assoc _ _ _))))) (sym c'≡a'∙b)) 
+              step
+            ; c' c'≡a'∙b ste-stop → ste-app-seq₁ (f c' c'≡a'∙b ste-stop) }
+⟪-● {e = e} {d = d} {a = b} (K ⨾ app⟨fun e₁ ⟩⟨-⟩) f 
+  = ⟪-● K λ { c' c'≡a'∙b (ste-app-seq₁ ste-fun) → 
+          let step = ste-app-seq₂ ste-fun (f c' c'≡a'∙b ste-stop) in 
+            Eq.subst 
+              (λ a → `app (`fun _) d ⇓ `app (`fun _) e ↝ a) 
+              (identityˡ c') 
+              step
+            ; c' c'≡a'∙b (ste-app-seq₁ ste-stop) → 
+          let step = ste-app-seq₂ ste-fun (f c' c'≡a'∙b ste-stop) in 
+            Eq.subst 
+              (λ a → `app (`fun _) d ⇓ `app (`fun _) e ↝ a) 
+              (identityˡ c') 
+              step
+            ; c' c'≡a'∙b (ste-app-seq₂ {a = a} {b = c} ste-fun e⇓e') → 
+          let step = ste-app-seq₂ ste-fun (f c' (Eq.trans c'≡a'∙b (cong (λ a → b ∙ a) (identityˡ c))) e⇓e') in 
+            Eq.subst 
+              (λ a → `app (`fun _) d ⇓ `app (`fun _) _ ↝ a) 
+              (identityˡ c') 
+              step
+            ; c' c'≡a'∙b (ste-app-seq₂ {a = a} {b = c} ste-stop e⇓e') → 
+          let step = ste-app-seq₂ ste-fun (f c' (Eq.trans c'≡a'∙b (cong (λ a → b ∙ a) (identityˡ c))) e⇓e') in 
+            Eq.subst 
+              (λ a → `app (`fun _) d ⇓ `app (`fun _) _ ↝ a) 
+              (identityˡ c') 
+              step
+            ; c' c'≡a'∙b (ste-app {a = a} {b = c} {c = g} ste-fun e₂⇓v v-val e⇓e') → 
+          let step = ste-app ste-fun (f (b ∙ c) Eq.refl e₂⇓v) v-val e⇓e' in 
+            Eq.subst 
+              (λ a → `app (`fun _) d ⇓ _ ↝ a) 
+              (Eq.trans (cong (λ a → a ∙ g) (identityˡ (b ∙ c))) (Eq.trans (assoc b c g) (Eq.trans (cong (λ a → b ∙ (a ∙ g)) (sym (identityˡ c))) (sym c'≡a'∙b)))) 
+              step
+            ; c' c'≡a'∙b (ste-app {a = a} {b = c} {c = g} ste-stop e₂⇓v v-val e⇓e') → 
+          let step = ste-app ste-fun (f (b ∙ c) Eq.refl e₂⇓v) v-val e⇓e' in 
+            Eq.subst 
+              (λ a → `app (`fun _) d ⇓ _ ↝ a) 
+              (Eq.trans (cong (λ a → a ∙ g) (identityˡ (b ∙ c))) (Eq.trans (assoc b c g) (Eq.trans (cong (λ a → b ∙ (a ∙ g)) (sym (identityˡ c))) (sym c'≡a'∙b)))) 
+              step
+            ; c' c'≡a'∙b ste-stop → 
+          let step = ste-app-seq₂ ste-fun (f c' c'≡a'∙b ste-stop) in 
+            Eq.subst 
+              (λ a → `app (`fun _) d ⇓ `app (`fun _) e ↝ a) 
+              (identityˡ c') 
+              step }
+
+mutual 
+  ▹-↦*→⇓ : {K : Frame} {k : K ÷ τ} {e : · ⊢ τ} {v : · ⊢ return-type k} {a : Effect} → 
+      k ▹ e ↦* ε ◃ v ↝ a  
+    ------------------------
+    → k ● e ⇓ v ↝ a
+  ▹-↦*→⇓ (↦*-step {b = b} ke-zero s) rewrite identityˡ b = ◃-↦*→⇓ s v-zero 
+  ▹-↦*→⇓ (↦*-step {b = b} ke-suc₁ s) rewrite identityˡ b = ▹-↦*→⇓ s
+  ▹-↦*→⇓ (↦*-step {b = b} ke-case s) rewrite identityˡ b = ▹-↦*→⇓ s
+  ▹-↦*→⇓ (↦*-step {b = b} ke-fun s) rewrite identityˡ b = ◃-↦*→⇓ s v-fun 
+  ▹-↦*→⇓ (↦*-step {b = b} ke-app₁ s) rewrite identityˡ b = ▹-↦*→⇓ s
+  ▹-↦*→⇓ {k = k} (↦*-step {a = a} {b = b} ke-eff s) 
+    = ⟪-● k 
+      (λ c' c'≡a∙b' e⇓v → 
+        let step = ste-eff e⇓v in 
+          Eq.subst (λ a → `eff _ _ ⇓ _ ↝ a) (sym c'≡a∙b') step) 
+      (a ∙ b) Eq.refl (▹-↦*→⇓ s)
+
+  ◃-↦*→⇓ : {K : Frame} {k : K ÷ τ} {e : · ⊢ τ} {v : · ⊢ return-type k} {a : Effect} → 
+      k ◃ e ↦* ε ◃ v ↝ a
+    → e val
+    ------------------------
+    → k ● e ⇓ v ↝ a
+  ◃-↦*→⇓ {k = ε} ↦*-refl e-val = ste-stop
+  ◃-↦*→⇓ {k = k ⨾ F} (↦*-step {b = b} ke-suc₂ s) e-val rewrite identityˡ b = ◃-↦*→⇓ s (v-suc e-val)
+  ◃-↦*→⇓ {k = k ⨾ F} (↦*-step {b = b} ke-case-z s) e-val 
+    = ⟪-● k 
+      (λ b' b'≡b e₁⇓e' → 
+        let step = ste-case-z ste-zero e₁⇓e' in 
+        Eq.subst (λ a → `case `zero _ _ ⇓ _ ↝ a) (sym b'≡b) step) 
+      (1# ∙ b) Eq.refl (▹-↦*→⇓ s)
+  ◃-↦*→⇓ {k = k ⨾ F} (↦*-step {b = b} ke-case-s s) (v-suc v-val)
+    = ⟪-● k (λ b' b'≡b e₂⇓e' → 
+        let step = ste-case-s (ste-suc ste-stop) v-val e₂⇓e' in 
+          Eq.subst (λ a → `case (`suc _) _ _ ⇓ _ ↝ a) (sym b'≡b) step)
+      (1# ∙ b) Eq.refl (▹-↦*→⇓ s)
+  ◃-↦*→⇓ {k = k ⨾ F} (↦*-step {b = b} ke-app₂ s) v-fun rewrite identityˡ b = ▹-↦*→⇓ s
+  ◃-↦*→⇓ {k = k ⨾ F} (↦*-step {b = b} ke-app₃ s) e-val 
+    = ⟪-● k (λ c' c'≡a∙b' e⇓e' → 
+        let step = ste-app ste-fun ste-stop e-val e⇓e' in 
+          Eq.subst (λ a → `app (`fun _) _ ⇓ _ ↝ a) (Eq.trans (Eq.cong (λ a → a ∙ _) (identityʳ 1#)) (sym c'≡a∙b')) step) 
+      (1# ∙ b) Eq.refl (▹-↦*→⇓ s)
+
+↦*→⇓-ε : {e v : · ⊢ τ} {a : Effect} → 
+    ε ▹ e ↦* ε ◃ v ↝ a
+  ------------------------
+  → e ⇓ v ↝ a  
+↦*→⇓-ε e↦*v = ▹-↦*→⇓ e↦*v
+
+↦*⇔⇓ : {e v : · ⊢ τ} {a : Effect} → 
+    ε ▹ e ↦* ε ◃ v ↝ a
+  ------------------------
+  ⇔ 
+  ------------------------
+    (v val) × (e ⇓ v ↝ a)
+↦*⇔⇓ = (λ e↦*v → ▹-val e↦*v , ↦*→⇓-ε e↦*v) , λ (v-val , e⇓v) → ⇓→↦*-ε e⇓v v-val
