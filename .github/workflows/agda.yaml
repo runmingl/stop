@@ -1,0 +1,52 @@
+name: Compile Agda and Deploy HTML
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  check:
+    name: Check Index.agda
+    strategy:
+      matrix:
+        os: [ubuntu-latest, macOS-latest, windows-latest]
+        agda-version: ['2.7.0.1', '2.7.0', '2.6.4.3', '2.6.4.1']
+
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: wenkokke/setup-agda@v2
+        with:
+          agda-version: ${{ matrix.agda-version }}
+          agda-stdlib-version: 'recommended'
+
+      - run: agda src/Index.agda
+
+  html:
+    name: Generate HTML
+    strategy:
+      matrix:
+        os: [macOS-latest]
+        agda-version: ['2.7.0.1']
+
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: wenkokke/setup-agda@v2
+        with:
+          agda-version: ${{ matrix.agda-version }}
+          agda-stdlib-version: 'recommended'
+          
+      - run: |
+          agda --html --html-dir=stop src/index.agda
+          cp Agda.css stop/
+
+      - uses: appleboy/scp-action@v1
+        with:
+          host: ${{ secrets.HOST }}
+          username: ${{ secrets.USERNAME }}
+          password: ${{ secrets.PASSWORD }}
+          source: "stop/*.html,stop/*.css"
+          target: ${{ secrets.AFS_PATH }}
