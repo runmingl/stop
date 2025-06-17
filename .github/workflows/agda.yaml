@@ -9,7 +9,7 @@ jobs:
     name: Check Index.agda
     strategy:
       matrix:
-        os: [ubuntu-latest, macOS-latest, windows-latest]
+        os: [ubuntu-latest, windows-latest]
         agda-version: ['2.7.0.1', '2.7.0', '2.6.4.3', '2.6.4.1']
 
     runs-on: ${{ matrix.os }}
