@@ -30,7 +30,7 @@ data _↦_↝_ : · ⊢ τ → · ⊢ τ → Effect → Set ℓ where
     ------------------------
     `case `zero e₁ e₂ ↦ e₁ ↝ 1#
 
-  se-case-s : {v : · ⊢ Nat} {e₁ : · ⊢ τ} {e₂ : · # Nat ⊢ τ} {a : Effect} →
+  se-case-s : {v : · ⊢ Nat} {e₁ : · ⊢ τ} {e₂ : · # Nat ⊢ τ} →
       v val
     ------------------------
     → `case (`suc v) e₁ e₂ ↦ e₂ [ v ] ↝ 1#

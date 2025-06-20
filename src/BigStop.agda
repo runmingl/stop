@@ -76,3 +76,11 @@ data _⇓_↝_ : · ⊢ τ → · ⊢ τ → Effect → Set ℓ where
 
     ------------------------
     e ⇓ e ↝ 1#
+
+v⇓v : {v : · ⊢ τ} → 
+    v val 
+  ------------------------
+  → v ⇓ v ↝ 1#
+v⇓v v-zero        = ste-zero
+v⇓v (v-suc v-val) = ste-suc (v⇓v v-val)
+v⇓v v-fun         = ste-fun

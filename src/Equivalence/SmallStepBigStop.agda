@@ -102,7 +102,7 @@ private
   ↦*-trans step₁ step₂'
 ⇓→↦* (ste-case-s e⇓s v-val e'⇓e'') = 
   let step₁ = compatible se-case (⇓→↦* e⇓s) in 
-  let step₂ = ↦*-step (se-case-s {a = 1#} v-val) (⇓→↦* e'⇓e'') in 
+  let step₂ = ↦*-step (se-case-s v-val) (⇓→↦* e'⇓e'') in 
   let step₂' = Eq.subst (λ c → `case (`suc _) _ _ ↦* _ ↝ c) (identityˡ _) step₂ in
   ↦*-trans step₁ step₂'
 ⇓→↦* (ste-eff e⇓e') = ↦*-step se-eff (⇓→↦* e⇓e')

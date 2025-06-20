@@ -70,7 +70,7 @@ private
 ⇓→↦* (be-case-s e⇓v↝a e⇓v↝b) with ⇓-val e⇓v↝a  
 ... | v-suc v-val =
   let step₁ = compatible se-case (⇓→↦* e⇓v↝a) in 
-  let step₂ = ↦*-step (se-case-s {a = 1#} v-val) (⇓→↦* e⇓v↝b) in 
+  let step₂ = ↦*-step (se-case-s v-val) (⇓→↦* e⇓v↝b) in 
   let step₂' = Eq.subst (λ c → `case (`suc _) _ _ ↦* _ ↝ c) (identityˡ _) step₂ in
   ↦*-trans step₁ step₂'
 ⇓→↦* be-fun = ↦*-refl

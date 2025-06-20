@@ -12,7 +12,7 @@ open import PCF monoid
 open import Substitution monoid
 
 open import BigStep monoid 
-open import BigStop monoid renaming (_⇓_↝_ to _↧_↝_)
+open import BigStop monoid renaming (_⇓_↝_ to _↧_↝_) hiding (v⇓v)
 
 private
   variable
