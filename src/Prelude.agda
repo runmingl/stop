@@ -15,6 +15,9 @@ postulate
 cong₃ : ∀ {ℓ : Level} {A B C D : Set ℓ} (f : A → B → C → D) {x y u v i j} → x ≡ y → u ≡ v → i ≡ j → f x u i ≡ f y v j
 cong₃ f Eq.refl Eq.refl Eq.refl = Eq.refl
 
+sym-trans : {ℓ : Level} {A : Set ℓ} {a b c : A} (p : a ≡ b) (q : b ≡ c) → Eq.sym (Eq.trans p q) ≡ Eq.trans (Eq.sym q) (Eq.sym p)
+sym-trans Eq.refl Eq.refl = Eq.refl
+
 record MonoidWithLeftZero ℓ : Set (suc ℓ) where
   infixl 7 _∙_
   field 

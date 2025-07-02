@@ -14,6 +14,8 @@ open import Substitution monoid
 open import StackMachine monoid
 open import BigStop monoid 
 
+open import Equivalence.SmallStepBigStop monoid using (⇓-trans)
+
 private
   variable
     τ σ : Type
@@ -276,3 +278,125 @@ mutual
   ------------------------
     (v val) × (e ⇓ v ↝ a)
 ↦*⇔⇓ = (λ e↦*v → ▹-val e↦*v , ↦*→⇓-ε e↦*v) , λ (v-val , e⇓v) → ⇓→↦*-ε e⇓v v-val
+
+return : (s : State) → Type 
+return (k ◃ _) = return-type k
+return (k ▹ _) = return-type k
+
+↦-return-≡ : {s s' : State} {a : Effect} → 
+    s ↦ s' ↝ a 
+  ------------------------
+  → return s ≡ return s' 
+↦-return-≡ ke-zero   = Eq.refl
+↦-return-≡ ke-suc₁   = Eq.refl
+↦-return-≡ ke-suc₂   = Eq.refl
+↦-return-≡ ke-case   = Eq.refl
+↦-return-≡ ke-case-z = Eq.refl
+↦-return-≡ ke-case-s = Eq.refl
+↦-return-≡ ke-fun    = Eq.refl
+↦-return-≡ ke-app₁   = Eq.refl
+↦-return-≡ ke-app₂   = Eq.refl
+↦-return-≡ ke-eff    = Eq.refl 
+↦-return-≡ ke-app₃   = Eq.refl
+
+↦*-return-≡ : {s s' : State} {a : Effect} → 
+    s ↦* s' ↝ a 
+  -------------------------
+  → return s ≡ return s'
+↦*-return-≡ ↦*-refl = Eq.refl
+↦*-return-≡ (↦*-step step steps) = Eq.trans (↦-return-≡ step) (↦*-return-≡ steps)
+
+k●e⇓k'●e' : (s s' : State) (a : Effect) → return s ≡ return s' → Set ℓ
+k●e⇓k'●e' (k ◃ e) (k' ◃ e') a p = e val → k ● e ⇓ Eq.subst (· ⊢_) (Eq.sym p) (k' ● e') ↝ a 
+k●e⇓k'●e' (k ▹ e) (k' ◃ e') a p =         k ● e ⇓ Eq.subst (· ⊢_) (Eq.sym p) (k' ● e') ↝ a 
+k●e⇓k'●e' (k ▹ e) (k' ▹ e') a p =         k ● e ⇓ Eq.subst (· ⊢_) (Eq.sym p) (k' ● e') ↝ a 
+k●e⇓k'●e' (k ◃ e) (k' ▹ e') a p = e val → k ● e ⇓ Eq.subst (· ⊢_) (Eq.sym p) (k' ● e') ↝ a
+
+↦-k●e⇓ : {s s' : State} {a : Effect} → 
+    (transition : s ↦ s' ↝ a)
+  ------------------------
+  → k●e⇓k'●e' s s' a (↦-return-≡ transition)
+↦-k●e⇓ {k ◃ e} {k' ◃ e'} ke-suc₂ e-val   = ste-stop 
+↦-k●e⇓ {k ◃ e} {k' ▹ e'} ke-case-z e-val = ⟪-● k' (λ _ a≡b e₁⇓e' → 
+  let step = ste-case-z ste-zero e₁⇓e' in 
+    Eq.subst (λ a → `case `zero _ _ ⇓ _ ↝ a) (sym a≡b) step) 
+    1# (sym (identityʳ 1#)) ste-stop
+↦-k●e⇓ {k ◃ e} {k' ▹ e'} ke-case-s (v-suc e-val) = ⟪-● k' (λ _ a≡b e₂⇓e' → 
+  let step = ste-case-s (ste-suc (v⇓v e-val)) e-val e₂⇓e' in 
+    Eq.subst (λ a → `case (`suc _) _ _ ⇓ _ ↝ a) (sym a≡b) step) 
+    1# (sym (identityʳ 1#)) ste-stop
+↦-k●e⇓ {k ◃ e} {k' ▹ e'} ke-app₂ e-val   = ste-stop
+↦-k●e⇓ {k ◃ e} {k' ▹ e'} ke-app₃ e-val   = ⟪-● k' (λ _ c≡b e⇓e' → 
+  let step = ste-app ste-fun (v⇓v e-val) e-val e⇓e' in 
+    Eq.subst (λ a → `app (`fun _) _ ⇓ _ ↝ a) (sym (trans c≡b (cong (λ a → a ∙ _) (sym (identityʳ 1#))))) step) 
+    1# (sym (identityʳ 1#)) ste-stop 
+↦-k●e⇓ {k ▹ e} {k' ◃ e'} ke-zero         = ste-stop
+↦-k●e⇓ {k ▹ e} {k' ◃ e'} ke-fun          = ste-stop
+↦-k●e⇓ {k ▹ e} {k' ▹ e'} ke-suc₁         = ste-stop
+↦-k●e⇓ {k ▹ e} {k' ▹ e'} ke-case         = ste-stop
+↦-k●e⇓ {k ▹ e} {k' ▹ e'} ke-app₁         = ste-stop
+↦-k●e⇓ {k ▹ e} {k' ▹ e'} ke-eff          = ⟪-● k' (λ _ c'≡ab' e⇓e' →
+  let step = ste-eff e⇓e' in 
+    Eq.subst (λ a → `eff _ _ ⇓ _ ↝ a) (sym c'≡ab') step)
+    _ (sym (identityʳ _)) ste-stop 
+
+↦*-k●e⇓ : {s s' : State} {a : Effect} → 
+    (transition : s ↦* s' ↝ a)
+  ------------------------
+  → k●e⇓k'●e' s s' a (↦*-return-≡ transition)
+↦*-k●e⇓ {k ◃ e} {s'} ↦*-refl _ = ste-stop
+↦*-k●e⇓ {k ▹ e} {s'} ↦*-refl   = ste-stop
+↦*-k●e⇓ {k ◃ e} {k' ◃ e'} (↦*-step {s' = (k'' ◃ e'')} step steps) e-val with ↦-k●e⇓ step e-val | ↦*-k●e⇓ steps (◃-val (↦*-step step ↦*-refl) e-val)
+... | foo | bar = {!   !}
+↦*-k●e⇓ {k ◃ e} {k' ◃ e'} (↦*-step {s' = (k'' ▹ e'')} step steps) e-val with ↦-k●e⇓ step e-val | ↦*-k●e⇓ steps 
+... | foo | bar = {!   !}
+↦*-k●e⇓ {k ◃ e} {k' ▹ e'} (↦*-step {s' = (k'' ◃ e'')} step steps) e-val with ↦-k●e⇓ step e-val | ↦*-k●e⇓ steps (◃-val (↦*-step step ↦*-refl) e-val)
+... | foo | bar = {!   !}
+↦*-k●e⇓ {k ◃ e} {k' ▹ e'} (↦*-step {s' = (k'' ▹ e'')} step steps) e-val with ↦-k●e⇓ step e-val | ↦*-k●e⇓ steps 
+... | foo | bar = {!   !}
+↦*-k●e⇓ {k ▹ e} {k' ◃ e'} (↦*-step {s' = (k'' ◃ e'')} step steps) with ↦-k●e⇓ step | ↦*-k●e⇓ steps (▹-val (↦*-step step ↦*-refl))
+... | foo | bar = {!   !}
+↦*-k●e⇓ {k ▹ e} {k' ◃ e'} (↦*-step {s' = (k'' ▹ e'')} step steps) with ↦-k●e⇓ step | ↦*-k●e⇓ steps
+... | foo | bar = {!   !}
+↦*-k●e⇓ {k ▹ e} {k' ▹ e'} (↦*-step {s' = (k'' ◃ e'')} step steps) with ↦-k●e⇓ step | ↦*-k●e⇓ steps (▹-val (↦*-step step ↦*-refl))
+... | foo | bar = {!    !}
+↦*-k●e⇓ {k ▹ e} {k' ▹ e'} (↦*-step {s' = (k'' ▹ e'')} {a = a} {b = b} step steps) with ↦-k●e⇓ step | ↦*-k●e⇓ steps
+... | foo | bar = ⇓-trans foo lemma
+  where 
+    deal : 
+      {A B C : Set ℓ}
+      (T : A → B → Set ℓ)
+      (f : {a : A} {b : B} → T a b → C)
+      (Q : C → Set ℓ)
+      (P : {a : A} {b : B} {k : T a b} → Q (f k) → Q (f k) → Set ℓ)
+      {a a' : A} {b b' : B} (k : T a b) (k' : T a' b') (eq : f k ≡ f k')
+      (e : Q (f k)) (e' : Q (f k))
+      (d : P e e') →
+      P (Eq.subst Q eq e) (Eq.subst Q eq e')
+    deal {A} {B} {C} T f Q P {a} {a'} {b} {b'} k k' eq e e' d = {!   !}
+
+    lem : Eq.subst (_⊢_ ·) (Eq.sym (↦-return-≡ step)) (k'' ● e'') ⇓ Eq.subst (_⊢_ ·) (Eq.sym (↦-return-≡ step)) (Eq.subst (_⊢_ ·) (Eq.sym (↦*-return-≡ steps)) (k' ● e')) ↝ b 
+    lem = deal (λ K τ → K ÷ τ) return-type (_⊢_ ·) (λ e₁ e₂ → e₁ ⇓ e₂ ↝ b) k'' k (Eq.sym (↦-return-≡ step)) (k'' ● e'') (Eq.subst (_⊢_ ·) (Eq.sym (↦*-return-≡ steps)) (k' ● e')) bar
+
+    eq : Eq.subst (_⊢_ ·) (Eq.sym (Eq.trans (↦-return-≡ step) (↦*-return-≡ steps))) (k' ● e') 
+       ≡ Eq.subst (_⊢_ ·) (Eq.sym (↦-return-≡ step)) (Eq.subst (_⊢_ ·) (Eq.sym (↦*-return-≡ steps)) (k' ● e'))
+    eq = 
+      let open ≡-Reasoning in 
+      begin 
+        Eq.subst (_⊢_ ·) (Eq.sym (Eq.trans (↦-return-≡ step) (↦*-return-≡ steps))) (k' ● e')
+      ≡⟨ cong (λ p → Eq.subst (_⊢_ ·) p (k' ● e')) (sym-trans (↦-return-≡ step) (↦*-return-≡ steps)) ⟩ 
+        Eq.subst (_⊢_ ·) ((Eq.trans (Eq.sym (↦*-return-≡ steps)) (Eq.sym (↦-return-≡ step)))) (k' ● e')
+      ≡⟨ Eq.subst-subst (Eq.sym (↦*-return-≡ steps)) ⟨ 
+        Eq.subst (_⊢_ ·) (Eq.sym (↦-return-≡ step)) (Eq.subst (_⊢_ ·) (Eq.sym (↦*-return-≡ steps)) (k' ● e'))
+      ∎
+
+    lemma : Eq.subst (_⊢_ ·) (Eq.sym (↦-return-≡ step)) (k'' ● e'') ⇓ Eq.subst (_⊢_ ·) (Eq.sym (Eq.trans (↦-return-≡ step) (↦*-return-≡ steps))) (k' ● e') ↝ b 
+    lemma = Eq.subst (λ e → _ ⇓ e ↝ b) (Eq.sym eq) lem
+
+↦*→⇓-ε-s : {e : · ⊢ τ} {a : Effect} {s : State} →
+    ε ▹ e ↦* s ↝ a
+  ------------------------
+  → Σ[ e' ∈ · ⊢ τ ] (e ⇓ e' ↝ a)
+↦*→⇓-ε-s {s = k' ◃ e'} d = _ , ↦*-k●e⇓ d
+↦*→⇓-ε-s {s = k' ▹ e'} d = _ , ↦*-k●e⇓ d
+  
