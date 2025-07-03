@@ -347,52 +347,36 @@ k●e⇓k'●e' (k ◃ e) (k' ▹ e') a p = e val → k ● e ⇓ Eq.subst (· �
 ↦*-k●e⇓ {k ◃ e} {s'} ↦*-refl _ = ste-stop
 ↦*-k●e⇓ {k ▹ e} {s'} ↦*-refl   = ste-stop
 ↦*-k●e⇓ {k ◃ e} {k' ◃ e'} (↦*-step {s' = (k'' ◃ e'')} step steps) e-val with ↦-k●e⇓ step e-val | ↦*-k●e⇓ steps (◃-val (↦*-step step ↦*-refl) e-val)
-... | foo | bar = {!   !}
+↦*-k●e⇓ {k ◃ e} {k' ◃ e'} (↦*-step {_} {k'' ◃ e''} ke-suc₂ steps) e-val   | step⇓ | steps⇓ = ⇓-trans step⇓ steps⇓
 ↦*-k●e⇓ {k ◃ e} {k' ◃ e'} (↦*-step {s' = (k'' ▹ e'')} step steps) e-val with ↦-k●e⇓ step e-val | ↦*-k●e⇓ steps 
-... | foo | bar = {!   !}
+↦*-k●e⇓ {k ◃ e} {k' ◃ e'} (↦*-step {_} {k'' ▹ e''} ke-case-z steps) e-val | step⇓ | steps⇓ = ⇓-trans step⇓ steps⇓
+↦*-k●e⇓ {k ◃ e} {k' ◃ e'} (↦*-step {_} {k'' ▹ e''} ke-case-s steps) e-val | step⇓ | steps⇓ = ⇓-trans step⇓ steps⇓
+↦*-k●e⇓ {k ◃ e} {k' ◃ e'} (↦*-step {_} {k'' ▹ e''} ke-app₂ steps) e-val   | step⇓ | steps⇓ = ⇓-trans step⇓ steps⇓
+↦*-k●e⇓ {k ◃ e} {k' ◃ e'} (↦*-step {_} {k'' ▹ e''} ke-app₃ steps) e-val   | step⇓ | steps⇓ = ⇓-trans step⇓ steps⇓
 ↦*-k●e⇓ {k ◃ e} {k' ▹ e'} (↦*-step {s' = (k'' ◃ e'')} step steps) e-val with ↦-k●e⇓ step e-val | ↦*-k●e⇓ steps (◃-val (↦*-step step ↦*-refl) e-val)
-... | foo | bar = {!   !}
+↦*-k●e⇓ {k ◃ e} {k' ▹ e'} (↦*-step {_} {k'' ◃ e''} ke-suc₂ steps) e-val   | step⇓ | steps⇓ = ⇓-trans step⇓ steps⇓
 ↦*-k●e⇓ {k ◃ e} {k' ▹ e'} (↦*-step {s' = (k'' ▹ e'')} step steps) e-val with ↦-k●e⇓ step e-val | ↦*-k●e⇓ steps 
-... | foo | bar = {!   !}
+↦*-k●e⇓ {k ◃ e} {k' ▹ e'} (↦*-step {_} {k'' ▹ e''} ke-case-z steps) e-val | step⇓ | steps⇓ = ⇓-trans step⇓ steps⇓
+↦*-k●e⇓ {k ◃ e} {k' ▹ e'} (↦*-step {_} {k'' ▹ e''} ke-case-s steps) e-val | step⇓ | steps⇓ = ⇓-trans step⇓ steps⇓
+↦*-k●e⇓ {k ◃ e} {k' ▹ e'} (↦*-step {_} {k'' ▹ e''} ke-app₂ steps) e-val   | step⇓ | steps⇓ = ⇓-trans step⇓ steps⇓
+↦*-k●e⇓ {k ◃ e} {k' ▹ e'} (↦*-step {_} {k'' ▹ e''} ke-app₃ steps) e-val   | step⇓ | steps⇓ = ⇓-trans step⇓ steps⇓
 ↦*-k●e⇓ {k ▹ e} {k' ◃ e'} (↦*-step {s' = (k'' ◃ e'')} step steps) with ↦-k●e⇓ step | ↦*-k●e⇓ steps (▹-val (↦*-step step ↦*-refl))
-... | foo | bar = {!   !}
+↦*-k●e⇓ {k ▹ e} {k' ◃ e'} (↦*-step {_} {k'' ◃ e''} ke-zero steps) | step⇓ | steps⇓ = ⇓-trans step⇓ steps⇓
+↦*-k●e⇓ {k ▹ e} {k' ◃ e'} (↦*-step {_} {k'' ◃ e''} ke-fun steps)  | step⇓ | steps⇓ = ⇓-trans step⇓ steps⇓
 ↦*-k●e⇓ {k ▹ e} {k' ◃ e'} (↦*-step {s' = (k'' ▹ e'')} step steps) with ↦-k●e⇓ step | ↦*-k●e⇓ steps
-... | foo | bar = {!   !}
+↦*-k●e⇓ {k ▹ e} {k' ◃ e'} (↦*-step {_} {k'' ▹ e''} ke-suc₁ steps) | step⇓ | steps⇓ = ⇓-trans step⇓ steps⇓
+↦*-k●e⇓ {k ▹ e} {k' ◃ e'} (↦*-step {_} {k'' ▹ e''} ke-case steps) | step⇓ | steps⇓ = ⇓-trans step⇓ steps⇓
+↦*-k●e⇓ {k ▹ e} {k' ◃ e'} (↦*-step {_} {k'' ▹ e''} ke-app₁ steps) | step⇓ | steps⇓ = ⇓-trans step⇓ steps⇓
+↦*-k●e⇓ {k ▹ e} {k' ◃ e'} (↦*-step {_} {k'' ▹ e''} ke-eff steps)  | step⇓ | steps⇓ = ⇓-trans step⇓ steps⇓
 ↦*-k●e⇓ {k ▹ e} {k' ▹ e'} (↦*-step {s' = (k'' ◃ e'')} step steps) with ↦-k●e⇓ step | ↦*-k●e⇓ steps (▹-val (↦*-step step ↦*-refl))
-... | foo | bar = {!    !}
-↦*-k●e⇓ {k ▹ e} {k' ▹ e'} (↦*-step {s' = (k'' ▹ e'')} {a = a} {b = b} step steps) with ↦-k●e⇓ step | ↦*-k●e⇓ steps
-... | foo | bar = ⇓-trans foo lemma
-  where 
-    deal : 
-      {A B C : Set ℓ}
-      (T : A → B → Set ℓ)
-      (f : {a : A} {b : B} → T a b → C)
-      (Q : C → Set ℓ)
-      (P : {a : A} {b : B} {k : T a b} → Q (f k) → Q (f k) → Set ℓ)
-      {a a' : A} {b b' : B} (k : T a b) (k' : T a' b') (eq : f k ≡ f k')
-      (e : Q (f k)) (e' : Q (f k))
-      (d : P e e') →
-      P (Eq.subst Q eq e) (Eq.subst Q eq e')
-    deal {A} {B} {C} T f Q P {a} {a'} {b} {b'} k k' eq e e' d = {!   !}
-
-    lem : Eq.subst (_⊢_ ·) (Eq.sym (↦-return-≡ step)) (k'' ● e'') ⇓ Eq.subst (_⊢_ ·) (Eq.sym (↦-return-≡ step)) (Eq.subst (_⊢_ ·) (Eq.sym (↦*-return-≡ steps)) (k' ● e')) ↝ b 
-    lem = deal (λ K τ → K ÷ τ) return-type (_⊢_ ·) (λ e₁ e₂ → e₁ ⇓ e₂ ↝ b) k'' k (Eq.sym (↦-return-≡ step)) (k'' ● e'') (Eq.subst (_⊢_ ·) (Eq.sym (↦*-return-≡ steps)) (k' ● e')) bar
-
-    eq : Eq.subst (_⊢_ ·) (Eq.sym (Eq.trans (↦-return-≡ step) (↦*-return-≡ steps))) (k' ● e') 
-       ≡ Eq.subst (_⊢_ ·) (Eq.sym (↦-return-≡ step)) (Eq.subst (_⊢_ ·) (Eq.sym (↦*-return-≡ steps)) (k' ● e'))
-    eq = 
-      let open ≡-Reasoning in 
-      begin 
-        Eq.subst (_⊢_ ·) (Eq.sym (Eq.trans (↦-return-≡ step) (↦*-return-≡ steps))) (k' ● e')
-      ≡⟨ cong (λ p → Eq.subst (_⊢_ ·) p (k' ● e')) (sym-trans (↦-return-≡ step) (↦*-return-≡ steps)) ⟩ 
-        Eq.subst (_⊢_ ·) ((Eq.trans (Eq.sym (↦*-return-≡ steps)) (Eq.sym (↦-return-≡ step)))) (k' ● e')
-      ≡⟨ Eq.subst-subst (Eq.sym (↦*-return-≡ steps)) ⟨ 
-        Eq.subst (_⊢_ ·) (Eq.sym (↦-return-≡ step)) (Eq.subst (_⊢_ ·) (Eq.sym (↦*-return-≡ steps)) (k' ● e'))
-      ∎
-
-    lemma : Eq.subst (_⊢_ ·) (Eq.sym (↦-return-≡ step)) (k'' ● e'') ⇓ Eq.subst (_⊢_ ·) (Eq.sym (Eq.trans (↦-return-≡ step) (↦*-return-≡ steps))) (k' ● e') ↝ b 
-    lemma = Eq.subst (λ e → _ ⇓ e ↝ b) (Eq.sym eq) lem
-
+↦*-k●e⇓ {k ▹ e} {k' ▹ e'} (↦*-step {_} {k'' ◃ e''} ke-zero steps) | step⇓ | steps⇓ = ⇓-trans step⇓ steps⇓
+↦*-k●e⇓ {k ▹ e} {k' ▹ e'} (↦*-step {_} {k'' ◃ e''} ke-fun steps)  | step⇓ | steps⇓ = ⇓-trans step⇓ steps⇓
+↦*-k●e⇓ {k ▹ e} {k' ▹ e'} (↦*-step {s' = (k'' ▹ e'')} step steps) with ↦-k●e⇓ step | ↦*-k●e⇓ steps
+↦*-k●e⇓ {k ▹ e} {k' ▹ e'} (↦*-step {_} {k'' ▹ e''} ke-suc₁ steps) | step⇓ | steps⇓ = ⇓-trans step⇓ steps⇓
+↦*-k●e⇓ {k ▹ e} {k' ▹ e'} (↦*-step {_} {k'' ▹ e''} ke-case steps) | step⇓ | steps⇓ = ⇓-trans step⇓ steps⇓
+↦*-k●e⇓ {k ▹ e} {k' ▹ e'} (↦*-step {_} {k'' ▹ e''} ke-app₁ steps) | step⇓ | steps⇓ = ⇓-trans step⇓ steps⇓
+↦*-k●e⇓ {k ▹ e} {k' ▹ e'} (↦*-step {_} {k'' ▹ e''} ke-eff steps)  | step⇓ | steps⇓ = ⇓-trans step⇓ steps⇓
+ 
 ↦*→⇓-ε-s : {e : · ⊢ τ} {a : Effect} {s : State} →
     ε ▹ e ↦* s ↝ a
   ------------------------
