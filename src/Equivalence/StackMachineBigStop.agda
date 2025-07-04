@@ -229,7 +229,7 @@ mutual
   ▹-↦*→↧ (↦*-step {b = b} ke-zero s) rewrite identityˡ b = ◃-↦*→↧ s v-zero 
   ▹-↦*→↧ (↦*-step {b = b} ke-suc₁ s) rewrite identityˡ b = ▹-↦*→↧ s
   ▹-↦*→↧ (↦*-step {b = b} ke-case s) rewrite identityˡ b = ▹-↦*→↧ s
-  ▹-↦*→↧ (↦*-step {b = b} ke-fun s) rewrite identityˡ b = ◃-↦*→↧ s v-fun 
+  ▹-↦*→↧ (↦*-step {b = b} ke-fun s)  rewrite identityˡ b = ◃-↦*→↧ s v-fun 
   ▹-↦*→↧ (↦*-step {b = b} ke-app₁ s) rewrite identityˡ b = ▹-↦*→↧ s
   ▹-↦*→↧ {k = k} (↦*-step {a = a} {b = b} ke-eff s) 
     = ⟪-● k 
