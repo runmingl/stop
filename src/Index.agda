@@ -1,13 +1,13 @@
 module Index where
 
 -- Language definition and typing rules
-import PCF
+import Language.PCF
 
 -- Various opeational/evaluation semantics
-import SmallStep
-import BigStep
-import StackMachine 
-import BigStop 
+import Language.SmallStep
+import Language.BigStep
+import Language.StackMachine 
+import Language.BigStop 
 
 -- Equivalence of operational/evaluation semantics
 import Equivalence.SmallStepBigStep
@@ -16,4 +16,4 @@ import Equivalence.SmallStepBigStop
 import Equivalence.BigStepBigStop
 import Equivalence.StackMachineBigStop 
 
-import Progress
+import Language.Progress

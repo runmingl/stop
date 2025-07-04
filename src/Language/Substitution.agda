@@ -1,5 +1,3 @@
-{-# OPTIONS --allow-unsolved-metas #-}
-
 open import Prelude
 
 open import Relation.Binary.PropositionalEquality as Eq using (_≡_; module ≡-Reasoning)
@@ -8,9 +6,9 @@ open import Function.Base using (_∘_)
 
 -- Adapted from PLFA https://plfa.github.io/Substitution
 
-module Substitution {ℓ : Level} (monoid : MonoidWithLeftZero ℓ) where
+module Language.Substitution {ℓ : Level} (monoid : Monoid ℓ) where
 
-open import PCF monoid 
+open import Language.PCF monoid 
 
 private 
   variable 

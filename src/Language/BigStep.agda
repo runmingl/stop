@@ -1,13 +1,11 @@
-{-# OPTIONS --allow-unsolved-metas #-}
-
 open import Prelude 
 
 open import Level 
 
-module BigStep {ℓ : Level} (monoid : MonoidWithLeftZero ℓ) where
+module Language.BigStep {ℓ : Level} (monoid : Monoid ℓ) where
 
-open import PCF monoid
-open import Substitution monoid
+open import Language.PCF monoid
+open import Language.Substitution monoid
 
 private
   variable

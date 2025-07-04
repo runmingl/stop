@@ -1,14 +1,12 @@
-{-# OPTIONS --allow-unsolved-metas #-}
-
 open import Prelude 
 
-open import Relation.Binary.PropositionalEquality as Eq using (cong₂)
+open import Relation.Binary.PropositionalEquality as Eq hiding ([_])
 open import Level 
 
-module StackMachine {ℓ : Level} (monoid : MonoidWithLeftZero ℓ) where
+module Language.StackMachine {ℓ : Level} (monoid : Monoid ℓ) where
 
-open import PCF monoid
-open import Substitution monoid
+open import Language.PCF monoid
+open import Language.Substitution monoid
 
 private
   variable
@@ -107,7 +105,7 @@ data _↦_↝_ : State → State → Effect → Set ℓ where
   ke-app₃ : {k : K ÷ σ} {e : · # τ ⇒ σ # τ ⊢ σ} {v : · ⊢ τ} →
       
     ------------------------
-   k ⨾ app⟨fun e ⟩⟨-⟩ ◃ v ↦ k ▹ e [ (`fun e) ][ v ] ↝ 1#
+    k ⨾ app⟨fun e ⟩⟨-⟩ ◃ v ↦ k ▹ e [ (`fun e) ][ v ] ↝ 1#
 
   ke-eff : {k : K ÷ τ} {e : · ⊢ τ} {a : Effect} →
     
@@ -146,16 +144,16 @@ k▹v↦*k◃v : {k : K ÷ τ} {v : · ⊢ τ} →
     v val 
   ------------------------
   → k ▹ v ↦* k ◃ v ↝ 1#
-k▹v↦*k◃v v-zero rewrite sym (identityʳ 1#) = ↦*-step ke-zero ↦*-refl 
-k▹v↦*k◃v (v-suc v-val) rewrite trans (sym (identityˡ 1#)) (cong₂ _∙_ (sym (identityˡ 1#)) (sym (identityˡ 1#))) = 
+k▹v↦*k◃v v-zero rewrite Eq.sym (identityʳ 1#) = ↦*-step ke-zero ↦*-refl 
+k▹v↦*k◃v (v-suc v-val) rewrite Eq.trans (Eq.sym (identityˡ 1#)) (Eq.cong₂ _∙_ (Eq.sym (identityˡ 1#)) (Eq.sym (identityˡ 1#))) = 
   let step₁ = ↦*-step ke-suc₁ (k▹v↦*k◃v v-val) in 
   let step₂ = ↦*-step ke-suc₂ ↦*-refl in 
     ↦*-trans step₁ step₂
-k▹v↦*k◃v v-fun rewrite sym (identityʳ 1#) = ↦*-step ke-fun ↦*-refl
+k▹v↦*k◃v v-fun rewrite Eq.sym (identityʳ 1#) = ↦*-step ke-fun ↦*-refl
 
 return-type : K ÷ τ → Type 
 return-type {τ = τ} ε = τ
-return-type (K ⨾ F)   = return-type K
+return-type (K ⨾ F) = return-type K
 
 infix 5 _●_
 _●_ : (k : K ÷ τ) → · ⊢ τ → · ⊢ return-type k

@@ -1,13 +1,11 @@
-{-# OPTIONS --allow-unsolved-metas #-}
-
 open import Prelude 
 
 open import Level 
 
-module SmallStep {ℓ : Level} (monoid : MonoidWithLeftZero ℓ) where
+module Language.SmallStep {ℓ : Level} (monoid : Monoid ℓ) where
 
-open import PCF monoid
-open import Substitution monoid
+open import Language.PCF monoid
+open import Language.Substitution monoid
 
 private
   variable
@@ -65,7 +63,7 @@ data _↦*_↝_ : · ⊢ τ → · ⊢ τ → Effect → Set ℓ where
   ↦*-step : {e e' e'' : · ⊢ τ} {a b : Effect} → 
       e ↦ e' ↝ a 
     → e' ↦* e'' ↝ b 
-    -------------
+    ------------------------
     → e ↦* e'' ↝ a ∙ b
 
 ↦*-trans : {e e' e'' : · ⊢ τ} {a b : Effect} → 
@@ -78,7 +76,7 @@ data _↦*_↝_ : · ⊢ τ → · ⊢ τ → Effect → Set ℓ where
     ↦*-step step₁ (↦*-trans step₂ step)
 
 compatible : {p : · ⊢ τ → · ⊢ σ}
-    → ({e e' : · ⊢ τ} {a : Effect} → e ↦ e' ↝ a → p e ↦ p e' ↝ a)
-    → {e e' : · ⊢ τ} {a : Effect} → e ↦* e' ↝ a → p e ↦* p e' ↝ a 
+  → ({e e' : · ⊢ τ} {a : Effect} → e ↦ e' ↝ a → p e ↦ p e' ↝ a)
+  → {e e' : · ⊢ τ} {a : Effect} → e ↦* e' ↝ a → p e ↦* p e' ↝ a 
 compatible alift ↦*-refl       = ↦*-refl
 compatible alift (↦*-step x s) = ↦*-step (alift x) (compatible alift s)

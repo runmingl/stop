@@ -1,22 +1,19 @@
-{-# OPTIONS --allow-unsolved-metas #-}
-
 open import Prelude 
 
 open import Level 
 open import Data.Product
-open import Relation.Binary.PropositionalEquality as Eq using (cong; _≡_; module ≡-Reasoning)
 
-module Equivalence.BigStepBigStop {ℓ : Level} (monoid : MonoidWithLeftZero ℓ) where
+module Equivalence.BigStepBigStop {ℓ : Level} (monoid : Monoid ℓ) where
 
-open import PCF monoid
-open import Substitution monoid
+open import Language.PCF monoid
+open import Language.Substitution monoid
 
-open import BigStep monoid 
-open import BigStop monoid renaming (_⇓_↝_ to _↧_↝_) hiding (v⇓v)
+open import Language.BigStep monoid 
+open import Language.BigStop monoid
 
 private
   variable
-    τ σ : Type
+    τ : Type
 
 ⇓→↧ : {e v : · ⊢ τ} {a : Effect} → 
     e ⇓ v ↝ a 

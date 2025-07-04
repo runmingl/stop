@@ -2,9 +2,9 @@ open import Prelude
 
 open import Level
 
-module PCF {ℓ : Level} (monoid : MonoidWithLeftZero ℓ) where
+module Language.PCF {ℓ : Level} (monoid : Monoid ℓ) where
     
-open MonoidWithLeftZero monoid public renaming (Carrier to Effect)
+open Monoid monoid public renaming (Carrier to Effect)
 
 infixr 7 _⇒_
 data Type : Set ℓ where
