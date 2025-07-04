@@ -320,12 +320,12 @@ k●e↧k'●e' (k ◃ e) (k' ▹ e') a p = e val → k ● e ↧ Eq.subst (· �
     Eq.subst (λ a → `case `zero _ _ ↧ _ ↝ a) (Eq.sym a≡b) step) 
     1# (Eq.sym (identityʳ 1#)) ste-stop
 ↦-k●e↧ {k ◃ e} {k' ▹ e'} ke-case-s (v-suc e-val) = ⟪-● k' (λ _ a≡b e₂↧e' → 
-  let step = ste-case-s (ste-suc (v↧v e-val)) e-val e₂↧e' in 
+  let step = ste-case-s (ste-suc ste-stop) e-val e₂↧e' in 
     Eq.subst (λ a → `case (`suc _) _ _ ↧ _ ↝ a) (Eq.sym a≡b) step) 
     1# (Eq.sym (identityʳ 1#)) ste-stop
 ↦-k●e↧ {k ◃ e} {k' ▹ e'} ke-app₂ e-val   = ste-stop
 ↦-k●e↧ {k ◃ e} {k' ▹ e'} ke-app₃ e-val   = ⟪-● k' (λ _ c≡b e↧e' → 
-  let step = ste-app ste-fun (v↧v e-val) e-val e↧e' in 
+  let step = ste-app ste-fun ste-stop e-val e↧e' in 
     Eq.subst (λ a → `app (`fun _) _ ↧ _ ↝ a) (Eq.sym (Eq.trans c≡b (Eq.cong (λ a → a ∙ _) (Eq.sym (identityʳ 1#))))) step) 
     1# (Eq.sym (identityʳ 1#)) ste-stop 
 ↦-k●e↧ {k ▹ e} {k' ◃ e'} ke-zero         = ste-stop

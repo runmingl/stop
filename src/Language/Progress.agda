@@ -43,13 +43,13 @@ progress (`suc e) with progress e
 ... | inj₂ (e' , a , d , p) = inj₂ (`suc e' , a , ste-suc d , p)
 progress (`case e e₁ e₂) with progress e 
 ... | inj₁ v-zero           = inj₂ (e₁ , 1# ∙ 1# , ste-case-z ste-zero ste-stop , tt)
-... | inj₁ (v-suc e-val)    = inj₂ ((e₂ [ _ ]) , 1# ∙ 1# , ste-case-s (v↧v (v-suc e-val)) e-val ste-stop , tt)
+... | inj₁ (v-suc e-val)    = inj₂ ((e₂ [ _ ]) , 1# ∙ 1# , ste-case-s ste-stop e-val ste-stop , tt)
 ... | inj₂ (e' , a , d , p) = inj₂ (`case e' e₁ e₂ , a , ste-case-seq d , p)
 progress (`fun e) = inj₁ v-fun
 progress (`app e₁ e₂) with progress e₁ 
 ... | inj₁ (v-fun {e = e}) with progress e₂ 
-... | inj₁ e₂-val              = inj₂ ((e [ `fun e ][ e₂ ]) , 1# ∙ 1# ∙ 1# , ste-app ste-fun (v↧v e₂-val) e₂-val ste-stop , tt)
-... | inj₂ (e₂' , a , d , p)   = inj₂ (`app (`fun e) e₂' , 1# ∙ a , ste-app-seq₂ (v↧v v-fun) d , inj₂ p)
+... | inj₁ e₂-val              = inj₂ ((e [ `fun e ][ e₂ ]) , 1# ∙ 1# ∙ 1# , ste-app ste-fun ste-stop e₂-val ste-stop , tt)
+... | inj₂ (e₂' , a , d , p)   = inj₂ (`app (`fun e) e₂' , 1# ∙ a , ste-app-seq₂ ste-stop d , inj₂ p)
 progress (`app e₁ e₂) | inj₂ (e₁' , a , d , p) = inj₂ (`app e₁' e₂ , a , ste-app-seq₁ d , p)
 progress (`eff a e) = inj₂ (e , a ∙ 1# , ste-eff ste-stop , tt)
 
