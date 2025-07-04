@@ -122,7 +122,7 @@ data _↦*_↝_ : State → State → Effect → Set ℓ where
   ↦*-step : {s s' s'' : State} {a b : Effect} → 
       s ↦ s' ↝ a 
     → s' ↦* s'' ↝ b 
-    -------------
+    ------------------------
     → s ↦* s'' ↝ a ∙ b
 
 ↦*-trans : {s s' s'' : State} {a b : Effect} → 
@@ -135,8 +135,8 @@ data _↦*_↝_ : State → State → Effect → Set ℓ where
     ↦*-step step₁ (↦*-trans step₂ step)
 
 compatible : {p : State → State}
-    → ({s s' : State} {a : Effect} → s ↦ s' ↝ a → p s ↦ p s' ↝ a)
-    → {s s' : State} {a : Effect} → s ↦* s' ↝ a → p s ↦* p s' ↝ a 
+  → ({s s' : State} {a : Effect} → s ↦ s' ↝ a → p s ↦ p s' ↝ a)
+  → {s s' : State} {a : Effect} → s ↦* s' ↝ a → p s ↦* p s' ↝ a 
 compatible alift ↦*-refl       = ↦*-refl
 compatible alift (↦*-step x s) = ↦*-step (alift x) (compatible alift s)
 
