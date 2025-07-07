@@ -85,6 +85,16 @@ effect-arithimic₂ a b c =
 ⇩→↦* (ste-eff e⇩v) v-val k = ↦*-step ke-eff (⇩→↦* e⇩v v-val k)
 ⇩→↦* ste-stop v-val k = k▹v↦*k◃v v-val
 
+{-
+  Convergent Completeness
+-}
+⇩→↦*-ε : {e v : · ⊢ τ} {a : Effect} → 
+    e ⇩ v ↝ a 
+  → v val 
+  ------------------------
+  → ε ▹ e ↦* ε ◃ v ↝ a
+⇩→↦*-ε e⇩v v-val = ⇩→↦* e⇩v v-val ε
+
 ⇩→↦*s : {e e' : · ⊢ τ} {a : Effect} {K : Frame} → 
     e ⇩ e' ↝ a 
   → (k : K ÷ τ) 
@@ -123,12 +133,14 @@ effect-arithimic₂ a b c =
 ... | s , k▹e↦*s = s , ↦*-step ke-eff k▹e↦*s
 ⇩→↦*s (ste-stop {e = e}) k = k ▹ e , ↦*-refl 
 
-⇩→↦*-ε : {e v : · ⊢ τ} {a : Effect} → 
-    e ⇩ v ↝ a 
-  → v val 
+{-
+  Divergent Completeness
+-}
+⇩→↦*s-ε : {e e' : · ⊢ τ} {a : Effect} {K : Frame} → 
+    e ⇩ e' ↝ a 
   ------------------------
-  → ε ▹ e ↦* ε ◃ v ↝ a
-⇩→↦*-ε e⇩v v-val = ⇩→↦* e⇩v v-val ε
+  → Σ[ s ∈ State ] (ε ▹ e ↦* s ↝ a)
+⇩→↦*s-ε e⇩e' = ⇩→↦*s e⇩e' ε
 
 infix 4 _⟪_∣_
 _⟪_∣_ : · ⊢ τ → · ⊢ τ → Effect → Set ℓ 
@@ -263,19 +275,14 @@ mutual
           Eq.subst (λ a → `app (`fun _) _ ⇩ _ ↝ a) (Eq.trans (Eq.cong (λ a → a ∙ _) (identityʳ 1#)) (Eq.sym c'≡a∙b')) step) 
       (1# ∙ b) Eq.refl (▹-↦*→⇩ s)
 
+{-
+  Convergent Soundness
+-}
 ↦*→⇩-ε : {e v : · ⊢ τ} {a : Effect} → 
     ε ▹ e ↦* ε ◃ v ↝ a
   ------------------------
   → e ⇩ v ↝ a  
 ↦*→⇩-ε e↦*v = ▹-↦*→⇩ e↦*v
-
-↦*⇔⇩ : {e v : · ⊢ τ} {a : Effect} → 
-    ε ▹ e ↦* ε ◃ v ↝ a
-  ------------------------
-  ⇔ 
-  ------------------------
-    (v val) × (e ⇩ v ↝ a)
-↦*⇔⇩ = (λ e↦*v → ▹-val e↦*v , ↦*→⇩-ε e↦*v) , λ (v-val , e⇩v) → ⇩→↦*-ε e⇩v v-val
 
 return : (s : State) → Type 
 return (k ◃ _) = return-type k
@@ -375,6 +382,9 @@ k●e⇩k'●e' (k ◃ e) (k' ▹ e') a p = e val → k ● e ⇩ Eq.subst (· �
 ↦*-k●e⇩ {k ▹ e} {k' ▹ e'} (↦*-step {_} {k'' ▹ e''} ke-app₁ steps) | step⇩ | steps⇩ = ⇩-trans step⇩ steps⇩
 ↦*-k●e⇩ {k ▹ e} {k' ▹ e'} (↦*-step {_} {k'' ▹ e''} ke-eff steps)  | step⇩ | steps⇩ = ⇩-trans step⇩ steps⇩
  
+{-
+  Divergent Soundness
+-}
 ↦*→⇩-ε-s : {e : · ⊢ τ} {a : Effect} {s : State} →
     ε ▹ e ↦* s ↝ a
   ------------------------
@@ -382,3 +392,13 @@ k●e⇩k'●e' (k ◃ e) (k' ▹ e') a p = e val → k ● e ⇩ Eq.subst (· �
 ↦*→⇩-ε-s {s = k' ◃ e'} d = _ , ↦*-k●e⇩ d
 ↦*→⇩-ε-s {s = k' ▹ e'} d = _ , ↦*-k●e⇩ d
   
+{-
+  Convergent Equivalence
+-}
+↦*⇔⇩ : {e v : · ⊢ τ} {a : Effect} → 
+    ε ▹ e ↦* ε ◃ v ↝ a
+  ------------------------
+  ⇔ 
+  ------------------------
+    (v val) × (e ⇩ v ↝ a)
+↦*⇔⇩ = (λ e↦*v → ▹-val e↦*v , ↦*→⇩-ε e↦*v) , λ (v-val , e⇩v) → ⇩→↦*-ε e⇩v v-val
