@@ -20,7 +20,7 @@ private
   variable
     τ : Type
 
-progressing : {e e' : · ⊢ τ} {a : Effect} → e ↧ e' ↝ a → Set
+progressing : {e e' : · ⊢ τ} {a : Effect} → e ⇩ e' ↝ a → Set
 progressing ste-zero             = ⊥
 progressing (ste-suc d)          = progressing d
 progressing ste-fun              = ⊥
@@ -33,10 +33,14 @@ progressing (ste-case-s _ _ _)   = ⊤
 progressing (ste-eff _)          = ⊤
 progressing ste-stop             = ⊥
 
+infix 2 _↧_↝_
+_↧_↝_ : (e e' : · ⊢ τ) (a : Effect) → Set ℓ
+_↧_↝_ e e' a = Σ[ d ∈ e ⇩ e' ↝ a ] progressing d
+
 progress : 
     (e : · ⊢ τ)
   ------------------------
-  → e val ⊎ Σ[ e' ∈ · ⊢ τ ] Σ[ a ∈ Effect ] Σ[ d ∈ e ↧ e' ↝ a ] progressing d
+  → e val ⊎ Σ[ e' ∈ · ⊢ τ ] Σ[ a ∈ Effect ] (e ↧ e' ↝ a)
 progress `zero = inj₁ v-zero
 progress (`suc e) with progress e 
 ... | inj₁ e-val            = inj₁ (v-suc e-val)
@@ -54,21 +58,20 @@ progress (`app e₁ e₂) | inj₂ (e₁' , a , d , p) = inj₂ (`app e₁' e₂
 progress (`eff a e) = inj₂ (e , a ∙ 1# , ste-eff ste-stop , tt)
 
 progressing-progress : {e₁ e₂ : · ⊢ τ} {a : Effect} → 
-    (d : e₁ ↧ e₂ ↝ a)
-  → progressing d 
+    e₁ ↧ e₂ ↝ a
   ------------------------
   → Σ[ e₃ ∈ · ⊢ τ ] Σ[ b ∈ Effect ] Σ[ c ∈ Effect ] ((e₁ ↦ e₃ ↝ b) × (e₃ ↦* e₂ ↝ c) × (a ≡ b ∙ c))
-progressing-progress (ste-suc {e' = e'} {a = a} d) p with progressing-progress d p
+progressing-progress ((ste-suc d) , p) with progressing-progress (d , p)
 ... | e₃ , b , c , step₁ , step₂ , p    = `suc e₃ , b , c , se-suc step₁ , compatible se-suc step₂ , p
-progressing-progress (ste-app-seq₁ d) p with progressing-progress d p
+progressing-progress ((ste-app-seq₁ d) , p) with progressing-progress (d , p)
 ... | e₃ , b , c , step₁ , step₂ , p    = `app e₃ _ , b , c , se-app step₁ , compatible se-app step₂ , p
-progressing-progress (ste-app-seq₂ d d₁) (inj₁ p) with progressing-progress d p
+progressing-progress ((ste-app-seq₂ d d₁) , (inj₁ p)) with progressing-progress (d , p)
 ... | e₃ , b , c , step₁ , step₂ , p    = 
     `app e₃ _ , _ , _ , 
       se-app step₁ , 
-      ↦*-trans (compatible se-app step₂) (compatible se-app₁ (↧→↦* d₁)) , 
+      ↦*-trans (compatible se-app step₂) (compatible se-app₁ (⇩→↦* d₁)) , 
         Eq.trans (Eq.cong (λ a → a ∙ _) p) (assoc _ _ _)
-progressing-progress (ste-app-seq₂ d d₁) (inj₂ p) with progressing-progress d₁ p with ↧→↦* d
+progressing-progress ((ste-app-seq₂ d d₁) , (inj₂ p)) with progressing-progress (d₁ , p) with ⇩→↦* d
 ... | e₃ , b , c , step₁ , step₂ , p | ↦*-refl            = 
     `app (`fun _) _ , _ , _ , 
       se-app₁ step₁ , 
@@ -77,34 +80,34 @@ progressing-progress (ste-app-seq₂ d d₁) (inj₂ p) with progressing-progres
 ... | e₃ , b , c , step₁ , step₂ , p | ↦*-step step steps = 
     `app _ _ , _ , _ , 
       se-app step , 
-      ↦*-trans (compatible se-app steps) (compatible se-app₁ (↧→↦* d₁)) , 
+      ↦*-trans (compatible se-app steps) (compatible se-app₁ (⇩→↦* d₁)) , 
         assoc _ _ _
-progressing-progress (ste-app d d₁ v-val d₂) tt with ↧→↦* d | ↧→↦* d₁ 
-... | ↦*-refl            | ↦*-refl             = _ , _ , _ , se-app₂ v-val , ↧→↦* d₂ , Eq.trans (assoc _ _ _) (identityˡ _)
+progressing-progress ((ste-app d d₁ v-val d₂) , tt) with ⇩→↦* d | ⇩→↦* d₁ 
+... | ↦*-refl            | ↦*-refl             = _ , _ , _ , se-app₂ v-val , ⇩→↦* d₂ , Eq.trans (assoc _ _ _) (identityˡ _)
 ... | ↦*-refl            | ↦*-step step steps  =                
     `app (`fun _) _ , _ , _ , 
       se-app₁ step , 
-      ↦*-trans (compatible se-app₁ steps) (↦*-step (se-app₂ v-val) (↧→↦* d₂)) , 
+      ↦*-trans (compatible se-app₁ steps) (↦*-step (se-app₂ v-val) (⇩→↦* d₂)) , 
         Eq.trans (Eq.cong (λ a → a ∙ _) (identityˡ _)) (Eq.trans (assoc _ _ _) (Eq.cong (λ a → _ ∙ (_ ∙ a)) (Eq.sym ((identityˡ _)))))
 ... | ↦*-step step steps | _                   = 
     `app _ _ , _ , _ , 
       se-app step , 
-      ↦*-trans (compatible se-app steps) (↦*-trans (compatible se-app₁ (↧→↦* d₁)) (↦*-step (se-app₂ v-val) (↧→↦* d₂))) , 
+      ↦*-trans (compatible se-app steps) (↦*-trans (compatible se-app₁ (⇩→↦* d₁)) (↦*-step (se-app₂ v-val) (⇩→↦* d₂))) , 
         Eq.trans (assoc _ _ _) (Eq.trans (assoc _ _ _) (Eq.cong (λ a → _ ∙ (_ ∙ (_ ∙ a))) (Eq.sym (identityˡ _)))) 
-progressing-progress (ste-case-seq d) p with progressing-progress d p 
+progressing-progress ((ste-case-seq d) , p) with progressing-progress (d , p)
 ... | e₃ , b , c , step₁ , step₂ , p    = `case _ _ _ , _ , _ , se-case step₁ , compatible se-case step₂ , p
-progressing-progress (ste-case-z {e₁ = e₁} d d₁) tt with ↧→↦* d  
-... | ↦*-refl            = e₁ , _ , _ , se-case-z , ↧→↦* d₁ , Eq.refl
+progressing-progress ((ste-case-z {e₁ = e₁} d d₁) , tt) with ⇩→↦* d  
+... | ↦*-refl            = e₁ , _ , _ , se-case-z , ⇩→↦* d₁ , Eq.refl
 ... | ↦*-step step steps = 
     `case _ _ _ , _ , _ , 
       se-case step , 
-      ↦*-trans (compatible se-case steps) (↦*-step se-case-z (↧→↦* d₁)) , 
+      ↦*-trans (compatible se-case steps) (↦*-step se-case-z (⇩→↦* d₁)) , 
         Eq.trans (assoc _ _ _) (Eq.cong (λ d → _ ∙ (_ ∙ d)) (Eq.sym (identityˡ _))) 
-progressing-progress (ste-case-s {e₂ = e₂} d v-val d₁) tt with ↧→↦* d 
-... | ↦*-refl            = e₂ [ _ ] , _ , _ , se-case-s v-val , ↧→↦* d₁ , Eq.refl
+progressing-progress ((ste-case-s {e₂ = e₂} d v-val d₁) , tt) with ⇩→↦* d 
+... | ↦*-refl            = e₂ [ _ ] , _ , _ , se-case-s v-val , ⇩→↦* d₁ , Eq.refl
 ... | ↦*-step step steps = 
     `case _ _ _ , _ , _ , 
       se-case step , 
-      ↦*-trans (compatible se-case steps) (↦*-step (se-case-s v-val) (↧→↦* d₁)) , 
+      ↦*-trans (compatible se-case steps) (↦*-step (se-case-s v-val) (⇩→↦* d₁)) , 
         Eq.trans (assoc _ _ _) (Eq.cong (λ d → _ ∙ (_ ∙ d)) (Eq.sym (identityˡ _)))
-progressing-progress (ste-eff {e = e} d) tt = e , _ , _ , se-eff , ↧→↦* d , Eq.refl
+progressing-progress ((ste-eff {e = e} d) , tt) = e , _ , _ , se-eff , ⇩→↦* d , Eq.refl
