@@ -17,7 +17,6 @@ record Monoid ℓ : Set (suc ℓ) where
   field 
     Carrier                           : Set ℓ
     _∙_                               : Op₂ Carrier
-    0#                                : Carrier
     1#                                : Carrier
     isMonoid                          : IsMonoid _≡_ _∙_ 1#
 
