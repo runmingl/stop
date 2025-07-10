@@ -1,6 +1,8 @@
 # Big Stop Semantics
 
-> abstract here 
+> As evident in the programming language literature, many practitioners favor specifying dynamic program behavior using big-step over small-step semantics. Unlike small-step semantics, which must dwell on every intermediate program state, big-step semantics conveniently jump directly to the ever-important result of the computation. Big-step semantics also typically involve fewer inference rules than their small-step counterparts. However, in exchange for ergonomics, big-step semantics give up power: Small-step semantics describes program behaviors that are outside the grasp of big-step semantics, notably divergence.
+
+> This work presents a little-known extension of big-step semantics with inductive definitions that captures diverging computations without introducing error states. This *big-stop* semantics is illustrated for typed, untyped, and effectful variants of PCF, as well as a while-loop-based imperative language. Big-stop semantics extends the standard big-step inference rules with a few additional rules to define an evaluation judgment that is equivalent to the reflexive-transitive closure of small-step transitions. This simple extension contrasts with other solutions in the literature which sacrifice ergonomics by introducing many additional inference rules, global state, and/or less-commonly-understood reasoning principles like coinduction.
 
 This repository contains a formalization of the *Big Stop Semantics* in Agda. The Big Stop Semantics is exemplified on PCF with an eager evaluation strategy and general recursion. We define the Big Stop Semantics and use it to prove syntactic properties such as progress. Additionally, we formalize several standard evaluation semantics, including big-step semantics, small-step semantics, and stack machine semantics, and prove their equivalence with the Big Stop Semantics under various conditions.
 
