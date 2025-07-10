@@ -1,6 +1,7 @@
 *.agdai
 *~*
 *\#*
+*.zip
 
 /html
 /_build
