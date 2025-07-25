@@ -20,10 +20,9 @@ Whereas the small step semantics is a *list*-like data structure (where `↦*-re
 ### Getting Started
 
 This project is tested against the following Agda versions and their recomended standard library versions according to the [Agda wiki](https://wiki.portal.chalmers.se/agda/Libraries/StandardLibrary):
-- Agda 2.7.0.1 
-- Agda 2.7.0 
-- Agda 2.6.4.3 
-- Agda 2.6.4.1 
+- Agda 2.7.0.1 with Agda standard library 2.1.1/2.2
+- Agda 2.6.4.3 with Agda standard library 2.0
+- Agda 2.6.4.1 with Agda standard library 2.0
 
 To type-check the project, you can run the following command in the root directory of the project:
 
