@@ -12,35 +12,11 @@ open import Language.Substitution monoid
 open import Language.StackMachine monoid
 open import Language.BigStep monoid 
 
+open MonoidArithmetic monoid
+
 private
   variable
     τ : Type
-
-effect-arithimic₁ : (a b : Effect) → 1# ∙ a ∙ (1# ∙ b) ≡ a ∙ b
-effect-arithimic₁ a b = 
-  let open ≡-Reasoning in 
-    1# ∙ a ∙ (1# ∙ b) 
-  ≡⟨ Eq.cong (λ b → (1# ∙ a) ∙ b) (identityˡ b) ⟩ 
-    1# ∙ a ∙ b
-  ≡⟨ assoc 1# a b ⟩
-    1# ∙ (a ∙ b) 
-  ≡⟨ identityˡ (a ∙ b) ⟩ 
-    a ∙ b
-  ∎
-
-effect-arithimic₂ : (a b c : Effect) → 1# ∙ a ∙ (1# ∙ b ∙ (1# ∙ c)) ≡ a ∙ b ∙ c
-effect-arithimic₂ a b c = 
-  let open ≡-Reasoning in 
-    1# ∙ a ∙ (1# ∙ b ∙ (1# ∙ c)) 
-  ≡⟨ Eq.cong (λ a → a ∙ _) (identityˡ a) ⟩ 
-    a ∙ (1# ∙ b ∙ (1# ∙ c))
-  ≡⟨ Eq.cong (λ b → a ∙ (b ∙ _)) (identityˡ b) ⟩ 
-    a ∙ (b ∙ (1# ∙ c))
-  ≡⟨ Eq.cong (λ c → a ∙ (b ∙ c)) (identityˡ c) ⟩ 
-    a ∙ (b ∙ c)
-  ≡⟨ assoc a b c ⟨ 
-    a ∙ b ∙ c
-  ∎
 
 ⇓→↦* : {e v : · ⊢ τ} {a : Effect} {K : Frame} → 
     e ⇓ v ↝ a 
@@ -52,29 +28,17 @@ effect-arithimic₂ a b c =
   let step₁ = ↦*-step ke-suc₁ (⇓→↦* e⇓v (k ⨾ suc⟨-⟩)) in
   let step₂ = ↦*-step ke-suc₂ ↦*-refl in 
   let step = ↦*-trans step₁ step₂ in
-  Eq.subst (λ a → k ▹ `suc _ ↦* k ◃ `suc v ↝ a) eq step
-  where 
-    eq : 1# ∙ a ∙ (1# ∙ 1#) ≡ a 
-    eq = 
-      let open ≡-Reasoning in 
-        1# ∙ a ∙ (1# ∙ 1#)
-      ≡⟨ Eq.cong (λ b → (1# ∙ a) ∙ b) (identityʳ 1#) ⟩ 
-        1# ∙ a ∙ 1# 
-      ≡⟨ identityʳ (1# ∙ a) ⟩  
-        1# ∙ a 
-      ≡⟨ identityˡ a ⟩ 
-        a 
-      ∎
-⇓→↦* (be-case-z {a = a} {b = b} e⇓z e⇓v) k rewrite Eq.sym (effect-arithimic₁ a b) = 
+  Eq.subst (λ a → k ▹ `suc _ ↦* k ◃ `suc v ↝ a) (arithmetic₉ a) step
+⇓→↦* (be-case-z {a = a} {b = b} e⇓z e⇓v) k rewrite arithmetic₇ a b = 
   let step₁ = ↦*-step ke-case (⇓→↦* e⇓z (k ⨾ _)) in 
   let step₂ = ↦*-step ke-case-z (⇓→↦* e⇓v k) in
     ↦*-trans step₁ step₂
-⇓→↦* (be-case-s {a = a} {b = b} e⇓s e⇓v) k rewrite Eq.sym (effect-arithimic₁ a b) = 
+⇓→↦* (be-case-s {a = a} {b = b} e⇓s e⇓v) k rewrite arithmetic₇ a b = 
   let step₁ = ↦*-step ke-case (⇓→↦* e⇓s (k ⨾ _)) in 
   let step₂ = ↦*-step ke-case-s (⇓→↦* e⇓v k) in
     ↦*-trans step₁ step₂
 ⇓→↦* be-fun k = k▹v↦*k◃v v-fun
-⇓→↦* (be-app {a = a} {b = b} {c = c} e⇓f e⇓v e⇓v₁) k rewrite Eq.sym (effect-arithimic₂ a b c) = 
+⇓→↦* (be-app {a = a} {b = b} {c = c} e⇓f e⇓v e⇓v₁) k rewrite arithmetic₈ a b c = 
   let step₁ = ↦*-step ke-app₁ (⇓→↦* e⇓f (k ⨾ _)) in 
   let step₂ = ↦*-step ke-app₂ (⇓→↦* e⇓v (k ⨾ _)) in
   let step₃ = ↦*-step ke-app₃ (⇓→↦* e⇓v₁ k) in
@@ -139,7 +103,7 @@ mutual
   ▹-↦*→⇓ (↦*-step {b = b} ke-zero s) rewrite identityˡ b = ◃-↦*→⇓ s v-zero 
   ▹-↦*→⇓ (↦*-step {b = b} ke-suc₁ s) rewrite identityˡ b = ▹-↦*→⇓ s
   ▹-↦*→⇓ (↦*-step {b = b} ke-case s) rewrite identityˡ b = ▹-↦*→⇓ s
-  ▹-↦*→⇓ (↦*-step {b = b} ke-fun s) rewrite identityˡ b = ◃-↦*→⇓ s v-fun 
+  ▹-↦*→⇓ (↦*-step {b = b} ke-fun s)  rewrite identityˡ b = ◃-↦*→⇓ s v-fun 
   ▹-↦*→⇓ (↦*-step {b = b} ke-app₁ s) rewrite identityˡ b = ▹-↦*→⇓ s
   ▹-↦*→⇓ {k = k} (↦*-step {a = a} {b = b} ke-eff s) 
     = ⟪-● k 

@@ -12,6 +12,8 @@ open import Language.Substitution monoid
 open import Language.SmallStep monoid
 open import Language.BigStop monoid 
 
+open MonoidArithmetic monoid
+
 private
   variable
     τ : Type
@@ -34,9 +36,9 @@ private
       = ste-suc (↦→⇩ e↦e' ste-stop)
     ↦→⇩ (se-case e↦e') (ste-case-seq e'⇩e'') 
       = ste-case-seq (↦→⇩ e↦e' e'⇩e'')
-    ↦→⇩ (se-case {a = a} e↦e') (ste-case-z {a = b} {b = c} e'⇩z e₁⇩e'') rewrite Eq.sym (assoc a b c) 
+    ↦→⇩ (se-case {a = a} e↦e') (ste-case-z {a = b} {b = c} e'⇩z e₁⇩e'') rewrite arithmetic₁ a b c 
       = ste-case-z (↦→⇩ e↦e' e'⇩z) e₁⇩e''
-    ↦→⇩ (se-case {a = a} e↦e') (ste-case-s {a = b} {b = c} e'⇩s v-val e₂⇩e'') rewrite Eq.sym (assoc a b c)
+    ↦→⇩ (se-case {a = a} e↦e') (ste-case-s {a = b} {b = c} e'⇩s v-val e₂⇩e'') rewrite arithmetic₁ a b c
       = ste-case-s (↦→⇩ e↦e' e'⇩s) v-val e₂⇩e''
     ↦→⇩ (se-case e↦e') ste-stop 
       = ste-case-seq (↦→⇩ e↦e' ste-stop)
@@ -46,30 +48,28 @@ private
       = ste-case-s (ste-suc ste-stop) v-val e'⇩e''
     ↦→⇩ (se-app e↦e') (ste-app-seq₁ e'⇩e'') 
       = ste-app-seq₁ (↦→⇩ e↦e' e'⇩e'')
-    ↦→⇩ {a = a} (se-app e↦e') (ste-app-seq₂ {a = b} {b = c} e'⇩e'' e'⇩e''') rewrite Eq.sym (assoc a b c) 
+    ↦→⇩ {a = a} (se-app e↦e') (ste-app-seq₂ {a = b} {b = c} e'⇩e'' e'⇩e''') rewrite arithmetic₁ a b c 
       = ste-app-seq₂ (↦→⇩ e↦e' e'⇩e'') e'⇩e'''
-    ↦→⇩ {a = a} (se-app e↦e') (ste-app {a = b} {b = c} {c = d} e'⇩e'' e'⇩e''' v-val e'⇩e'''') rewrite Eq.trans (Eq.sym (assoc a (b ∙ c) d)) (Eq.cong (λ a → a ∙ d) (Eq.sym (assoc a b c)))
+    ↦→⇩ {a = a} (se-app e↦e') (ste-app {a = b} {b = c} {c = d} e'⇩e'' e'⇩e''' v-val e'⇩e'''') rewrite arithmetic₂ a b c d 
       = ste-app (↦→⇩ e↦e' e'⇩e'') e'⇩e''' v-val e'⇩e''''
     ↦→⇩ (se-app e↦e') ste-stop 
       = ste-app-seq₁ (↦→⇩ e↦e' ste-stop)
-    ↦→⇩ {a = a} (se-app₁ e↦e') (ste-app-seq₁ ste-fun) rewrite Eq.sym (identityˡ (a ∙ 1#)) 
+    ↦→⇩ {a = a} (se-app₁ e↦e') (ste-app-seq₁ ste-fun) rewrite arithmetic₅ a 
+      = ste-app-seq₂ ste-fun (↦→⇩ e↦e' ste-stop) 
+    ↦→⇩ {a = a} (se-app₁ e↦e') (ste-app-seq₁ ste-stop) rewrite arithmetic₅ a 
       = ste-app-seq₂ ste-fun (↦→⇩ e↦e' ste-stop)
-    ↦→⇩ {a = a} (se-app₁ e↦e') (ste-app-seq₁ ste-stop) rewrite Eq.sym (identityˡ (a ∙ 1#)) 
-      = ste-app-seq₂ ste-fun (↦→⇩ e↦e' ste-stop)
-    ↦→⇩ {a = a} (se-app₁ e↦e') (ste-app-seq₂ {b = b} ste-fun e'⇩e'') rewrite Eq.trans (Eq.cong (λ b → a ∙ b) (identityˡ b)) (Eq.sym (identityˡ (a ∙ b)))
-      = ste-app-seq₂ ste-fun (↦→⇩ e↦e' e'⇩e'')
-    ↦→⇩ {a = a} (se-app₁ e↦e') (ste-app-seq₂ {b = b} ste-stop e'⇩e'') rewrite Eq.trans (Eq.cong (λ b → a ∙ b) (identityˡ b)) (Eq.sym (identityˡ (a ∙ b))) 
-      = ste-app-seq₂ ste-fun (↦→⇩ e↦e' e'⇩e'')
-    ↦→⇩ {a = a} (se-app₁ e↦e') (ste-app {a = b} {b = c} {c = d} ste-fun e'⇩e''' v-val e'⇩e'''') 
-      rewrite Eq.trans (Eq.cong (λ c → a ∙ (c ∙ d)) (identityˡ c)) (Eq.trans (Eq.sym (assoc a c d)) (Eq.trans (Eq.sym (identityˡ (a ∙ c ∙ d))) (Eq.sym (assoc 1# (a ∙ c) d))))
+    ↦→⇩ {a = a} (se-app₁ e↦e') (ste-app-seq₂ {b = b} ste-fun e'⇩e'') rewrite arithmetic₆ a b
+      = ste-app-seq₂ ste-fun (↦→⇩ e↦e' e'⇩e'') 
+    ↦→⇩ {a = a} (se-app₁ e↦e') (ste-app-seq₂ {b = b} ste-stop e'⇩e'') rewrite arithmetic₆ a b 
+      = ste-app-seq₂ ste-fun (↦→⇩ e↦e' e'⇩e'') 
+    ↦→⇩ {a = a} (se-app₁ e↦e') (ste-app {b = c} {c = d} ste-fun e'⇩e''' v-val e'⇩e'''') rewrite arithmetic₃ a c d 
       = ste-app ste-fun (↦→⇩ e↦e' e'⇩e''') v-val e'⇩e''''
-    ↦→⇩ {a = a} (se-app₁ e↦e') (ste-app {a = b} {b = c} {c = d} ste-stop e'⇩e''' v-val e'⇩e'''') 
-      rewrite Eq.trans (Eq.cong (λ c → a ∙ (c ∙ d)) (identityˡ c)) (Eq.trans (Eq.sym (assoc a c d)) (Eq.trans (Eq.sym (identityˡ (a ∙ c ∙ d))) (Eq.sym (assoc 1# (a ∙ c) d))))
+    ↦→⇩ {a = a} (se-app₁ e↦e') (ste-app {b = c} {c = d} ste-stop e'⇩e''' v-val e'⇩e'''') rewrite arithmetic₃ a c d 
       = ste-app ste-fun (↦→⇩ e↦e' e'⇩e''') v-val e'⇩e''''
-    ↦→⇩ {a = a} (se-app₁ e↦e') ste-stop rewrite Eq.sym (identityˡ (a ∙ 1#))
+    ↦→⇩ {a = a} (se-app₁ e↦e') ste-stop rewrite arithmetic₅ a 
       = ste-app-seq₂ ste-fun (↦→⇩ e↦e' ste-stop)
-    ↦→⇩ {b = b} (se-app₂ v-val) e'⇩e'' rewrite (Eq.cong (λ a → a ∙ b) (Eq.sym (identityˡ 1#)))
-      = ste-app ste-fun ste-stop v-val e'⇩e'' 
+    ↦→⇩ {b = b} (se-app₂ v-val) e'⇩e'' rewrite arithmetic₄ b 
+      = ste-app ste-fun ste-stop v-val e'⇩e''
     ↦→⇩ se-eff e'⇩e'' 
       = ste-eff e'⇩e''
 

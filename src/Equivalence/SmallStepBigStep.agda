@@ -12,6 +12,8 @@ open import Language.Substitution monoid
 open import Language.SmallStep monoid
 open import Language.BigStep monoid 
 
+open MonoidArithmetic monoid
+
 private
   variable
     τ : Type
@@ -30,29 +32,28 @@ private
       ------------------------
       → e ⇓ v ↝ a ∙ b 
     ↦→⇓ (se-suc e↦e'↝a) (be-suc e'⇓v↝b)                 
-        = be-suc (↦→⇓ e↦e'↝a e'⇓v↝b)
+      = be-suc (↦→⇓ e↦e'↝a e'⇓v↝b)
     ↦→⇓ {a = a} (se-case e↦e'↝a) (be-case-z {a = c} {b = d} e'⇓z↝c e'⇓v↝d) 
-      rewrite Eq.sym (assoc a c d) 
-        = be-case-z (↦→⇓ e↦e'↝a e'⇓z↝c) e'⇓v↝d
+      rewrite arithmetic₁ a c d 
+      = be-case-z (↦→⇓ e↦e'↝a e'⇓z↝c) e'⇓v↝d 
     ↦→⇓ {a = a} (se-case e↦e'↝a) (be-case-s {a = c} {b = d} e'⇓s↝c e'⇓v↝d) 
-      rewrite Eq.sym (assoc a c d) 
-        = be-case-s (↦→⇓ e↦e'↝a e'⇓s↝c) e'⇓v↝d
+      rewrite arithmetic₁ a c d 
+      = be-case-s (↦→⇓ e↦e'↝a e'⇓s↝c) e'⇓v↝d
     ↦→⇓ se-case-z e'⇓v↝b 
-        = be-case-z (be-zero) e'⇓v↝b
+      = be-case-z (be-zero) e'⇓v↝b
     ↦→⇓ (se-case-s {v = v} v-val) e'⇓v↝b 
-        = be-case-s (v⇓v (v-suc v-val)) e'⇓v↝b 
+      = be-case-s (v⇓v (v-suc v-val)) e'⇓v↝b 
     ↦→⇓ {a = a} (se-app e↦e'↝a) (be-app {a = b} {b = c} {c = d} e'⇓v↝b e'⇓v↝c e'⇓v↝d) 
-      rewrite Eq.trans (Eq.sym (assoc a (b ∙ c) d)) (Eq.cong (λ e → e ∙ d) (Eq.sym (assoc a b c))) 
-        = be-app (↦→⇓ e↦e'↝a e'⇓v↝b) e'⇓v↝c e'⇓v↝d
-    ↦→⇓ {a = a} (se-app₁ e↦e'↝a) (be-app {e = e} {a = b} {b = c} {c = d} (be-fun) e'⇓v↝c e'⇓v↝d) 
-      rewrite Eq.trans (Eq.cong (λ e → a ∙ (e ∙ d)) (identityˡ c)) 
-              (Eq.trans (Eq.sym (assoc a c d)) (Eq.cong (λ e → e ∙ d) (Eq.sym (identityˡ (a ∙ c))))) 
-        = be-app be-fun (↦→⇓ e↦e'↝a e'⇓v↝c) e'⇓v↝d 
-    ↦→⇓ {b = b} (se-app₂ {e = e} {v = v} v-val) e'⇓v↝b 
-      rewrite Eq.trans (Eq.cong (λ a → 1# ∙ a) (Eq.sym (identityˡ b))) (Eq.sym (assoc 1# 1# b)) 
-        = be-app be-fun (v⇓v v-val) e'⇓v↝b 
+      rewrite arithmetic₂ a b c d 
+      = be-app (↦→⇓ e↦e'↝a e'⇓v↝b) e'⇓v↝c e'⇓v↝d 
+    ↦→⇓ {a = a} (se-app₁ e↦e'↝a) (be-app {b = c} {c = d} (be-fun) e'⇓v↝c e'⇓v↝d) 
+      rewrite arithmetic₃ a c d
+      = be-app be-fun (↦→⇓ e↦e'↝a e'⇓v↝c) e'⇓v↝d 
+    ↦→⇓ {b = b} (se-app₂ v-val) e'⇓v↝b 
+      rewrite arithmetic₄ b 
+      = be-app be-fun (v⇓v v-val) e'⇓v↝b
     ↦→⇓ se-eff e'⇓v↝b 
-        = be-eff e'⇓v↝b
+      = be-eff e'⇓v↝b
       
 ⇓→↦* : {e v : · ⊢ τ} {a : Effect} → 
     e ⇓ v ↝ a 
