@@ -66,3 +66,12 @@ module MonoidArithmetic {ℓ : Level} (monoid : Monoid ℓ) where
 
   arithmetic₉ : (a : Carrier) → 1# ∙ a ∙ (1# ∙ 1#) ≡ a 
   arithmetic₉ a = solve (Monoid.monoidInstance monoid)
+
+  arithmetic₁₀ : (a b c : Carrier) → 1# ∙ (a ∙ b) ∙ c ≡ a ∙ (b ∙ (1# ∙ c))
+  arithmetic₁₀ a b c = solve (Monoid.monoidInstance monoid)
+
+  arithmetic₁₁ : (a b c d : Carrier) → a ∙ b ∙ c ∙ d ≡ a ∙ (b ∙ (c ∙ (1# ∙ d)))
+  arithmetic₁₁ a b c d = solve (Monoid.monoidInstance monoid)
+
+  arithmetic₁₂ : (a b c : Carrier) → a ∙ b ∙ c ≡ a ∙ (b ∙ (1# ∙ c))
+  arithmetic₁₂ a b c = solve (Monoid.monoidInstance monoid)

@@ -14,6 +14,9 @@ open import Language.Substitution monoid
 
 open import Language.BigStop monoid 
 open import Language.SmallStep monoid
+
+open MonoidArithmetic monoid
+
 open import Equivalence.SmallStepBigStop monoid
 
 private
@@ -40,7 +43,7 @@ _↧_↝_ e e' a = Σ[ d ∈ e ⇩ e' ↝ a ] progressing d
 progress : 
     (e : · ⊢ τ)
   ------------------------
-  → e val ⊎ Σ[ e' ∈ · ⊢ τ ] Σ[ a ∈ Effect ] (e ↧ e' ↝ a)
+  → e val ⊎ ∃[ e' ] ∃[ a ] (e ↧ e' ↝ a)
 progress `zero = inj₁ v-zero
 progress (`suc e) with progress e 
 ... | inj₁ e-val            = inj₁ (v-suc e-val)
@@ -60,7 +63,7 @@ progress (`eff a e) = inj₂ (e , a ∙ 1# , ste-eff ste-stop , tt)
 progressing-progress : {e₁ e₂ : · ⊢ τ} {a : Effect} → 
     e₁ ↧ e₂ ↝ a
   ------------------------
-  → Σ[ e₃ ∈ · ⊢ τ ] Σ[ b ∈ Effect ] Σ[ c ∈ Effect ] ((e₁ ↦ e₃ ↝ b) × (e₃ ↦* e₂ ↝ c) × (a ≡ b ∙ c))
+  → ∃[ e₃ ] ∃[ b ] ∃[ c ] (e₁ ↦ e₃ ↝ b) × (e₃ ↦* e₂ ↝ c) × (a ≡ b ∙ c)
 progressing-progress ((ste-suc d) , p) with progressing-progress (d , p)
 ... | e₃ , b , c , step₁ , step₂ , p    = `suc e₃ , b , c , se-suc step₁ , compatible se-suc step₂ , p
 progressing-progress ((ste-app-seq₁ d) , p) with progressing-progress (d , p)
@@ -83,17 +86,16 @@ progressing-progress ((ste-app-seq₂ d d₁) , (inj₂ p)) with progressing-pro
       ↦*-trans (compatible se-app steps) (compatible se-app₁ (⇩→↦* d₁)) , 
         assoc _ _ _
 progressing-progress ((ste-app d d₁ v-val d₂) , tt) with ⇩→↦* d | ⇩→↦* d₁ 
-... | ↦*-refl            | ↦*-refl             = _ , _ , _ , se-app₂ v-val , ⇩→↦* d₂ , Eq.trans (assoc _ _ _) (identityˡ _)
+... | ↦*-refl            | ↦*-refl             = _ , _ , _ , se-app₂ v-val , ⇩→↦* d₂ , Eq.sym (arithmetic₄ _)
 ... | ↦*-refl            | ↦*-step step steps  =                
     `app (`fun _) _ , _ , _ , 
       se-app₁ step , 
       ↦*-trans (compatible se-app₁ steps) (↦*-step (se-app₂ v-val) (⇩→↦* d₂)) , 
-        Eq.trans (Eq.cong (λ a → a ∙ _) (identityˡ _)) (Eq.trans (assoc _ _ _) (Eq.cong (λ a → _ ∙ (_ ∙ a)) (Eq.sym ((identityˡ _)))))
+        arithmetic₁₀ _ _ _ 
 ... | ↦*-step step steps | _                   = 
     `app _ _ , _ , _ , 
       se-app step , 
-      ↦*-trans (compatible se-app steps) (↦*-trans (compatible se-app₁ (⇩→↦* d₁)) (↦*-step (se-app₂ v-val) (⇩→↦* d₂))) , 
-        Eq.trans (assoc _ _ _) (Eq.trans (assoc _ _ _) (Eq.cong (λ a → _ ∙ (_ ∙ (_ ∙ a))) (Eq.sym (identityˡ _)))) 
+      ↦*-trans (compatible se-app steps) (↦*-trans (compatible se-app₁ (⇩→↦* d₁)) (↦*-step (se-app₂ v-val) (⇩→↦* d₂))) , arithmetic₁₁ _ _ _ _
 progressing-progress ((ste-case-seq d) , p) with progressing-progress (d , p)
 ... | e₃ , b , c , step₁ , step₂ , p    = `case _ _ _ , _ , _ , se-case step₁ , compatible se-case step₂ , p
 progressing-progress ((ste-case-z {e₁ = e₁} d d₁) , tt) with ⇩→↦* d  
@@ -101,13 +103,11 @@ progressing-progress ((ste-case-z {e₁ = e₁} d d₁) , tt) with ⇩→↦* d
 ... | ↦*-step step steps = 
     `case _ _ _ , _ , _ , 
       se-case step , 
-      ↦*-trans (compatible se-case steps) (↦*-step se-case-z (⇩→↦* d₁)) , 
-        Eq.trans (assoc _ _ _) (Eq.cong (λ d → _ ∙ (_ ∙ d)) (Eq.sym (identityˡ _))) 
+      ↦*-trans (compatible se-case steps) (↦*-step se-case-z (⇩→↦* d₁)) , arithmetic₁₂ _ _ _
 progressing-progress ((ste-case-s {e₂ = e₂} d v-val d₁) , tt) with ⇩→↦* d 
 ... | ↦*-refl            = e₂ [ _ ] , _ , _ , se-case-s v-val , ⇩→↦* d₁ , Eq.refl
 ... | ↦*-step step steps = 
     `case _ _ _ , _ , _ , 
       se-case step , 
-      ↦*-trans (compatible se-case steps) (↦*-step (se-case-s v-val) (⇩→↦* d₁)) , 
-        Eq.trans (assoc _ _ _) (Eq.cong (λ d → _ ∙ (_ ∙ d)) (Eq.sym (identityˡ _)))
+      ↦*-trans (compatible se-case steps) (↦*-step (se-case-s v-val) (⇩→↦* d₁)) , arithmetic₁₂ _ _ _
 progressing-progress ((ste-eff {e = e} d) , tt) = e , _ , _ , se-eff , ⇩→↦* d , Eq.refl
