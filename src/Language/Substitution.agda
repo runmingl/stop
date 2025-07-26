@@ -2,7 +2,7 @@ open import Prelude
 
 open import Level
 
--- τdapted from PLFτ https://plfa.github.io/Substitution
+-- Adapted from PLFA https://plfa.github.io/Substitution
 
 module Language.Substitution {ℓ : Level} (monoid : Monoid ℓ) where
 
