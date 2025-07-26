@@ -208,8 +208,7 @@ mutual
   ▹-↦*→⇩ (↦*-step {b = b} ke-fun s)  rewrite identityˡ b = ◃-↦*→⇩ s v-fun 
   ▹-↦*→⇩ (↦*-step {b = b} ke-app₁ s) rewrite identityˡ b = ▹-↦*→⇩ s
   ▹-↦*→⇩ {k = k} (↦*-step {a = a} {b = b} ke-eff s) 
-    = ⟪-● k 
-      (λ c' c'≡a∙b' e⇩v → 
+    = ⟪-● k (λ c' c'≡a∙b' e⇩v → 
         let step = ste-eff e⇩v in 
           Eq.subst (λ a → `eff _ _ ⇩ _ ↝ a) (Eq.sym c'≡a∙b') step) 
       (a ∙ b) Eq.refl (▹-↦*→⇩ s)
@@ -222,8 +221,7 @@ mutual
   ◃-↦*→⇩ {k = ε} ↦*-refl e-val = ste-stop
   ◃-↦*→⇩ {k = k ⨾ F} (↦*-step {b = b} ke-suc₂ s) e-val rewrite identityˡ b = ◃-↦*→⇩ s (v-suc e-val)
   ◃-↦*→⇩ {k = k ⨾ F} (↦*-step {b = b} ke-case-z s) e-val 
-    = ⟪-● k 
-      (λ b' b'≡b e₁⇩e' → 
+    = ⟪-● k (λ b' b'≡b e₁⇩e' → 
         let step = ste-case-z ste-zero e₁⇩e' in 
         Eq.subst (λ a → `case `zero _ _ ⇩ _ ↝ a) (Eq.sym b'≡b) step) 
       (1# ∙ b) Eq.refl (▹-↦*→⇩ s)

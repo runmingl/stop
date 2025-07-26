@@ -88,12 +88,12 @@ _⟪_∣_ {τ} e d a = {v : · ⊢ τ} {b : Effect} → (c : Effect) →
           (Eq.trans (Eq.trans (assoc (b ∙ _) _ _) (Eq.trans (assoc _ _ _) (Eq.cong (λ a → b ∙ a) (Eq.sym (assoc _ _ _))))) (Eq.sym c'≡a'∙b)) 
           step })
 ⟪-● {e = e} {d = d} {a = b} (K ⨾ app⟨fun e₁ ⟩⟨-⟩) f 
-  = ⟪-● K λ { c' c'≡a'∙b (be-app {a = a} {b = c} {c = g} be-fun e₂⇓v e⇓v) → 
+  = ⟪-● K (λ { c' c'≡a'∙b (be-app {a = a} {b = c} {c = g} be-fun e₂⇓v e⇓v) → 
       let step = be-app be-fun (f (b ∙ c) Eq.refl e₂⇓v) e⇓v in 
         Eq.subst 
           (λ a → `app (`fun _) d ⇓ _ ↝ a) 
           (Eq.trans (Eq.cong (λ a → a ∙ g) (identityˡ (b ∙ c))) (Eq.trans (assoc b c g) (Eq.trans (Eq.cong (λ a → b ∙ (a ∙ g)) (Eq.sym (identityˡ c))) (Eq.sym c'≡a'∙b)))) 
-          step }
+          step })
 
 mutual 
   ▹-↦*→⇓ : {K : Frame} {k : K ÷ τ} {e : · ⊢ τ} {v : · ⊢ return-type k} {a : Effect} → 
@@ -120,8 +120,7 @@ mutual
   ◃-↦*→⇓ {k = ε} ↦*-refl e-val = v⇓v e-val
   ◃-↦*→⇓ {k = k ⨾ F} (↦*-step {b = b} ke-suc₂ s) e-val rewrite identityˡ b = ◃-↦*→⇓ s (v-suc e-val)
   ◃-↦*→⇓ {k = k ⨾ F} (↦*-step {b = b} ke-case-z s) e-val 
-    = ⟪-● k 
-      (λ b' b'≡b e₁⇓v → 
+    = ⟪-● k (λ b' b'≡b e₁⇓v → 
         let step = be-case-z be-zero e₁⇓v in 
           Eq.subst (λ a → `case `zero _ _ ⇓ _ ↝ a) (Eq.sym b'≡b) step) 
       (1# ∙ b) Eq.refl (▹-↦*→⇓ s)
