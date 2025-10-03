@@ -28,6 +28,9 @@ infix 1 _⇔_
 _⇔_ : {ℓ : Level} → Set ℓ → Set ℓ → Set ℓ
 _⇔_ A B = (A → B) × (B → A)
 
+uip : {ℓ : Level} {A : Set ℓ} {x y : A} → (p q : x ≡ y) → p ≡ q
+uip Eq.refl Eq.refl = Eq.refl
+
 
 module MonoidArithmetic {ℓ : Level} (monoid : Monoid ℓ) where 
   
@@ -69,3 +72,12 @@ module MonoidArithmetic {ℓ : Level} (monoid : Monoid ℓ) where
 
   arithmetic₁₂ : (a b c : Carrier) → a ∙ b ∙ c ≡ a ∙ (b ∙ (1# ∙ c))
   arithmetic₁₂ a b c = solve (Monoid.monoidInstance monoid)
+
+  arithmetic₁₃ : 1# ≡ 1# ∙ 1# ∙ (1# ∙ 1#)
+  arithmetic₁₃ = solve (Monoid.monoidInstance monoid)
+
+  arithmetic₁₄ : 1# ≡ 1# ∙ 1#
+  arithmetic₁₄ = solve (Monoid.monoidInstance monoid)
+
+  arithmetic₁₅ : 1# ≡ 1# ∙ 1# ∙ 1# 
+  arithmetic₁₅ = solve (Monoid.monoidInstance monoid)

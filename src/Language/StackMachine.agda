@@ -8,6 +8,8 @@ module Language.StackMachine {ℓ : Level} (monoid : Monoid ℓ) where
 open import Language.PCF monoid
 open import Language.Substitution monoid
 
+open MonoidArithmetic monoid
+
 private
   variable
     τ σ : Type
@@ -144,12 +146,12 @@ k▹v↦*k◃v : {k : K ÷ τ} {v : · ⊢ τ} →
     v val 
   ------------------------
   → k ▹ v ↦* k ◃ v ↝ 1#
-k▹v↦*k◃v v-zero rewrite Eq.sym (identityʳ 1#) = ↦*-step ke-zero ↦*-refl 
-k▹v↦*k◃v (v-suc v-val) rewrite Eq.trans (Eq.sym (identityˡ 1#)) (Eq.cong₂ _∙_ (Eq.sym (identityˡ 1#)) (Eq.sym (identityˡ 1#))) = 
+k▹v↦*k◃v v-zero rewrite arithmetic₁₄ = ↦*-step ke-zero ↦*-refl 
+k▹v↦*k◃v (v-suc v-val) rewrite arithmetic₁₃ = 
   let step₁ = ↦*-step ke-suc₁ (k▹v↦*k◃v v-val) in 
   let step₂ = ↦*-step ke-suc₂ ↦*-refl in 
     ↦*-trans step₁ step₂
-k▹v↦*k◃v v-fun rewrite Eq.sym (identityʳ 1#) = ↦*-step ke-fun ↦*-refl
+k▹v↦*k◃v v-fun rewrite arithmetic₁₄ = ↦*-step ke-fun ↦*-refl
 
 return-type : K ÷ τ → Type 
 return-type {τ = τ} ε = τ
@@ -186,3 +188,30 @@ mutual
   ◃-val (↦*-step ke-case-s s) (v-suc v-val) = ▹-val s
   ◃-val (↦*-step ke-app₂ s) v-fun           = ▹-val s
   ◃-val (↦*-step ke-app₃ s) v-val           = ▹-val s
+
+return : (s : State) → Type 
+return (k ◃ _) = return-type k
+return (k ▹ _) = return-type k
+
+↦-return-≡ : {s s' : State} {a : Effect} → 
+    s ↦ s' ↝ a 
+  ------------------------
+  → return s ≡ return s' 
+↦-return-≡ ke-zero   = Eq.refl
+↦-return-≡ ke-suc₁   = Eq.refl
+↦-return-≡ ke-suc₂   = Eq.refl
+↦-return-≡ ke-case   = Eq.refl
+↦-return-≡ ke-case-z = Eq.refl
+↦-return-≡ ke-case-s = Eq.refl
+↦-return-≡ ke-fun    = Eq.refl
+↦-return-≡ ke-app₁   = Eq.refl
+↦-return-≡ ke-app₂   = Eq.refl
+↦-return-≡ ke-eff    = Eq.refl 
+↦-return-≡ ke-app₃   = Eq.refl
+
+↦*-return-≡ : {s s' : State} {a : Effect} → 
+    s ↦* s' ↝ a 
+  -------------------------
+  → return s ≡ return s'
+↦*-return-≡ ↦*-refl = Eq.refl
+↦*-return-≡ (↦*-step step steps) = Eq.trans (↦-return-≡ step) (↦*-return-≡ steps)

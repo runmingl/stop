@@ -23,6 +23,9 @@ import Equivalence.SmallStepBigStep
 -- Proof of equivalence between stack machine and big-step semantics
 import Equivalence.StackMachineBigStep  
 
+-- Proof of equivalence between stack machine and small-step semantics
+import Equivalence.StackMachineSmallStep
+
 -- Proof of equivalence between small-step and big-stop semantics
 import Equivalence.SmallStepBigStop
 
