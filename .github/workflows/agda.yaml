@@ -40,7 +40,7 @@ jobs:
           agda-stdlib-version: 'recommended'
           
       - run: |
-          agda --html --html-dir=stop src/index.agda
+          agda --html --highlight-occurrences --html-dir=stop src/index.agda
           cp Agda.css stop/
 
       - uses: appleboy/scp-action@v1
