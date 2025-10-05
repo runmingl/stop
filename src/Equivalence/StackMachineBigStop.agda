@@ -14,8 +14,6 @@ open import Language.BigStop monoid
 
 open MonoidArithmetic monoid
 
-open import Equivalence.SmallStepBigStop monoid using (⇩-trans)
-
 private
   variable
     τ : Type
