@@ -4,7 +4,7 @@ open import Level
 open import Data.Product
 open import Relation.Binary.PropositionalEquality as Eq using (_≡_; module ≡-Reasoning)
 
-module Equivalence.StackMachineBigStep {ℓ : Level} (monoid : Monoid ℓ) where
+module SoundnessCompleteness.StackMachineBigStep {ℓ : Level} (monoid : Monoid ℓ) where
 
 open import Language.PCF monoid
 open import Language.Substitution monoid

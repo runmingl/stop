@@ -17,7 +17,7 @@ open import Language.SmallStep monoid
 
 open MonoidArithmetic monoid
 
-open import Equivalence.SmallStepBigStop monoid
+open import SoundnessCompleteness.SmallStepBigStop monoid
 
 private
   variable

@@ -17,23 +17,23 @@ import Language.StackMachine
 import Language.BigStop      
 
 
--- Proof of equivalence between small-step and big-step semantics
-import Equivalence.SmallStepBigStep     
+-- Proof of soundness and completeness between small-step and big-step semantics
+import SoundnessCompleteness.SmallStepBigStep     
 
--- Proof of equivalence between stack machine and big-step semantics
-import Equivalence.StackMachineBigStep  
+-- Proof of soundness and completeness between stack machine and big-step semantics
+import SoundnessCompleteness.StackMachineBigStep  
 
--- Proof of equivalence between stack machine and small-step semantics
-import Equivalence.StackMachineSmallStep
+-- Proof of soundness between stack machine and small-step semantics
+import SoundnessCompleteness.StackMachineSmallStep
 
--- Proof of equivalence between small-step and big-stop semantics
-import Equivalence.SmallStepBigStop
+-- Proof of soundness and completeness between small-step and big-stop semantics
+import SoundnessCompleteness.SmallStepBigStop
 
--- Proof of equivalence between big-step and big-stop semantics
-import Equivalence.BigStepBigStop
+-- Proof of soundness and completeness between big-step and big-stop semantics
+import SoundnessCompleteness.BigStepBigStop
 
--- Proof of equivalence between stack machine and big-stop semantics
-import Equivalence.StackMachineBigStop  
+-- Proof of soundness and completeness between stack machine and big-stop semantics
+import SoundnessCompleteness.StackMachineBigStop  
 
 
 -- Contains progress theorem stated in terms of Big-stop semantics (well-typed terms do not get stuck)

@@ -3,7 +3,7 @@ open import Prelude
 open import Level 
 open import Data.Product
 
-module Equivalence.BigStepBigStop {ℓ : Level} (monoid : Monoid ℓ) where
+module SoundnessCompleteness.BigStepBigStop {ℓ : Level} (monoid : Monoid ℓ) where
 
 open import Language.PCF monoid
 open import Language.Substitution monoid

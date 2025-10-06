@@ -6,7 +6,7 @@
 
 > This work presents a little-known extension of big-step semantics with inductive definitions that captures diverging computations without introducing error states. This *big-stop* semantics is illustrated for typed, untyped, and effectful variants of PCF, as well as a while-loop-based imperative language. Big-stop semantics extends the standard big-step inference rules with a few additional rules to define an evaluation judgment that is equivalent to the reflexive-transitive closure of small-step transitions. This simple extension contrasts with other solutions in the literature which sacrifice ergonomics by introducing many additional inference rules, global state, and/or less-commonly-understood reasoning principles like coinduction.
 
-This repository contains a formalization of the *Big-Stop Semantics* in Agda. The Big-Stop Semantics is exemplified on PCF with an eager evaluation strategy and general recursion. We define the Big-Stop Semantics and use it to prove syntactic properties such as progress. Additionally, we formalize several standard evaluation semantics, including big-step semantics, small-step semantics, and stack machine semantics, and prove their equivalence with the Big-Stop Semantics under various conditions.
+This repository contains a formalization of the *Big-Stop Semantics* in Agda. The Big-Stop Semantics is exemplified on PCF with an eager evaluation strategy and general recursion. We define the Big-Stop Semantics and use it to prove syntactic properties such as progress. Additionally, we formalize several standard evaluation semantics, including big-step semantics, small-step semantics, and stack machine semantics, and prove their soundness and completeness with respect to the Big-Stop Semantics under various conditions.
 
 This work demonstrates that:
 
@@ -14,7 +14,7 @@ This work demonstrates that:
 - It enables certain proofs that are difficult in other evaluation semantics. For example:
   - Progress cannot be proved using big-step semantics but can be proved using Big-Stop Semantics.
   - Big step semantics is not suitable for reasoning about non-terminating programs, while Big-Stop Semantics can handle both terminating and non-terminating programs.
-  - It is often difficult to prove the forward direction of equivalence between small-step and stack machine semantics, while the Big-Stop Semantics allows a more direct proof of equivalence with the stack machine semantics.
+  - It is often difficult to prove the completeness between small-step and stack machine semantics, while the Big-Stop Semantics allows a direct proof of equivalence with the stack machine semantics.
 - The complexity of proofs using Big-Stop Semantics is comparable to other semantics, while offering the benefits above.
 
 Whereas the small step semantics is a *list*-like data structure (where `↦*-refl` is `nil` and `↦*-step` is `cons`, and `↦*-trans` is list append), the Big-Stop Semantics is a *tree*-like data structure (where `⇩-trans` is a tree-join algorithm). So the question is: why settle on lists when we can have trees?
@@ -66,11 +66,11 @@ The project is structured as follows:
 - [`Language.StackMachine`](./src/Language/StackMachine.agda): Contains the stack machine semantics of PCF.
 - [`Language.BigStop`](./src/Language/BigStop.agda): Contains the Big-Stop Semantics of PCF.
 - [`Language.Progress`](./src/Language/Progress.agda): Contains the progress theorem of PCF using the Big-Stop Semantics.
-- `Equivalence`: Contains the equivalence theorems between the Big-Stop Semantics and other semantics.
+- `SoundnessCompleteness`: Contains the soundness and completeness theorems between the Big-Stop Semantics and other semantics.
 
 ### Important Theorems
 
-#### [`Equivalence.SmallStepBigStop`](./src/Equivalence/SmallStepBigStop.agda)
+#### [`SoundnessCompleteness.SmallStepBigStop`](./src/SoundnessCompleteness/SmallStepBigStop.agda)
 
 **Theorem** `↦*⇔⇩`. The Big-Stop Semantics is equivalent to the small step semantics.
 > For all expressions `e` and `e'` and effects `a`, `e ⇩ e' ↝ a` if and only if `e ↦* e' ↝ a`.
@@ -78,12 +78,12 @@ The project is structured as follows:
 **Theorem** `⇩-trans`. The Big-Stop Semantics is transitive.
 > If `e ⇩ e' ↝ a` and `e' ⇩ e'' ↝ b`, then `e ⇩ e'' ↝ a ∙ b`.
  
-#### [`Equivalence.BigStepBigStop`](./src/Equivalence/BigStepBigStop.agda)
+#### [`SoundnessCompleteness.BigStepBigStop`](./src/SoundnessCompleteness/BigStepBigStop.agda)
 
 **Theorem** `⇓⇔⇩`. The Big-Stop Semantics is equivalent to the big step semantics on terminating expressions.
 > For all expressions `e` and `v` and effects `a`, `e ⇓ v ↝ a` if and only if `e ⇩ v ↝ a` and `v val`.
 
-#### [`Equivalence.StackMachineBigStop`](./src/Equivalence/StackMachineBigStop.agda)
+#### [`SoundnessCompleteness.StackMachineBigStop`](./src/SoundnessCompleteness/StackMachineBigStop.agda)
 
 **Theorem** `⇩→↦*-ε`. Convergent completeness of the Big-Stop Semantics with respect to the stack machine semantics.
 > If `e ⇩ v ↝ a` and `v val`, then `ε ▹ e ↦* ε ◃ v ↝ a`.
