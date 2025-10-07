@@ -131,3 +131,19 @@ k●e⇒*k'●e' (k ◃ e) (k' ▹ e') a p = e val → k ● e ⇒* Eq.subst (·
   → Σ[ e' ∈ · ⊢ τ ] (e ⇒* e' ↝ a)
 ↦*→⇒*s-ε {s = k' ◃ e'} d = _ , ↦*-k●e⇒* d
 ↦*→⇒*s-ε {s = k' ▹ e'} d = _ , ↦*-k●e⇒* d
+
+
+open import SoundnessCompleteness.SmallStepBigStep monoid 
+open import SoundnessCompleteness.StackMachineBigStep monoid
+
+{-
+  Convergent Completeness
+-}
+
+⇒*→↦*ε : {e v : · ⊢ τ} {a : Effect} → 
+    v val 
+  → e ⇒* v ↝ a
+  ------------------------
+  → ε ▹ e ↦* ε ◃ v ↝ a
+⇒*→↦*ε v-val e⇒*v = ⇓→↦*-ε (↦*→⇓ v-val e⇒*v)
+

@@ -23,7 +23,7 @@ import SoundnessCompleteness.SmallStepBigStep
 -- Proof of soundness and completeness between stack machine and big-step semantics
 import SoundnessCompleteness.StackMachineBigStep  
 
--- Proof of soundness between stack machine and small-step semantics
+-- Proof of soundness and completeness between stack machine and small-step semantics
 import SoundnessCompleteness.StackMachineSmallStep
 
 -- Proof of soundness and completeness between small-step and big-stop semantics
