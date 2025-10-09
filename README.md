@@ -1,6 +1,6 @@
 # Big-Stop Semantics
 
-[![arXiv](https://img.shields.io/badge/arXiv-2508.15157-b31b1b.svg)](https://arxiv.org/abs/2508.15157)
+### **For artifact evaluation instructions, please refer to [AEC.md](./AEC.md).**
 
 > As evident in the programming language literature, many practitioners favor specifying dynamic program behavior using big-step over small-step semantics. Unlike small-step semantics, which must dwell on every intermediate program state, big-step semantics conveniently jump directly to the ever-important result of the computation. Big-step semantics also typically involve fewer inference rules than their small-step counterparts. However, in exchange for ergonomics, big-step semantics give up power: Small-step semantics describes program behaviors that are outside the grasp of big-step semantics, notably divergence.
 
@@ -22,6 +22,7 @@ Whereas the small step semantics is a *list*-like data structure (where `↦*-re
 ### Getting Started
 
 This project is tested against the following Agda versions and their recomended standard library versions according to the [Agda wiki](https://wiki.portal.chalmers.se/agda/Libraries/StandardLibrary):
+- Agda 2.8.0 with Agda standard library 2.3
 - Agda 2.7.0.1 with Agda standard library 2.1.1/2.2
 - Agda 2.6.4.3 with Agda standard library 2.0
 - Agda 2.6.4.1 with Agda standard library 2.0
@@ -47,7 +48,7 @@ Throughout the project, we take full advantage of Agda’s excellent support for
 - `e ⇩ e' ↝ a` is the Big-Stop evaluation judgment that `e` stops at `e'` with effect `a`.
 - `e ↧ e' ↝ a` is the progressing Big-Stop evaluation judgment that `e` is progressing to `e'` with effect `a`.
 
-Rules and theorems are written in a style that mirrors traditional inference rules on paper. For example, transitivity of small step evaluation is expressed as:
+Rules and theorems are written in a style that mirrors traditional inference rules on paper. For example, transitivity of small step evaluation is written as:
 
 ```agda
 ↦*-trans :  

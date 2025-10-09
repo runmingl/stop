@@ -140,10 +140,10 @@ open import SoundnessCompleteness.StackMachineBigStep monoid
   Convergent Completeness
 -}
 
-⇒*→↦*ε : {e v : · ⊢ τ} {a : Effect} → 
+⇒*→↦*-ε : {e v : · ⊢ τ} {a : Effect} → 
     v val 
   → e ⇒* v ↝ a
   ------------------------
   → ε ▹ e ↦* ε ◃ v ↝ a
-⇒*→↦*ε v-val e⇒*v = ⇓→↦*-ε (↦*→⇓ v-val e⇒*v)
+⇒*→↦*-ε v-val e⇒*v = ⇓→↦*-ε (↦*→⇓ v-val e⇒*v)
 
