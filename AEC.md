@@ -1,6 +1,6 @@
 # Artifact Evaluation Instructions
 
-This is the artifact instructions for (conditionally accepted) POPL26 paper *Big-Stop Semantics*. The artifact is a proof script of Agda formalizations of theorems proved in the paper. 
+This is the artifact instructions for (conditionally accepted) POPL26 paper *Big-Stop Semantics*. The artifact contains Agda formalizations of theorems presented in the paper. 
 
 ## Download, installation, and sanity-testing
 
