@@ -2,8 +2,11 @@ open import Prelude
 
 open import Level 
 open import Data.Product
-open import Relation.Binary.PropositionalEquality as Eq using (_≡_; module ≡-Reasoning)
+open import Relation.Binary.PropositionalEquality as Eq using (_≡_)
 
+{-
+  Soundness and Completeness between Stack Machine Semantics and Big-Step Semantics
+-}
 module SoundnessCompleteness.StackMachineBigStep {ℓ : Level} (monoid : Monoid ℓ) where
 
 open import Language.PCF monoid
@@ -45,12 +48,20 @@ private
     ↦*-trans step₁ (↦*-trans step₂ step₃)
 ⇓→↦* (be-eff e⇓v) k = ↦*-step ke-eff (⇓→↦* e⇓v k)
 
+{-
+  Convergent Completeness
+-}
 ⇓→↦*-ε : {e v : · ⊢ τ} {a : Effect} → 
     e ⇓ v ↝ a  
   ------------------------
   → ε ▹ e ↦* ε ◃ v ↝ a
 ⇓→↦*-ε e⇓v = ⇓→↦* e⇓v ε
+
+{-
+  Co-evaluation: if e evaluates to v then d also evaluates to v with an extra effect
   
+  This is necessary for proving soundness because there is no chance to inspect intermediate steps in big-step semantics.
+-}
 infix 4 _⟪_∣_
 _⟪_∣_ : · ⊢ τ → · ⊢ τ → Effect → Set ℓ 
 _⟪_∣_ {τ} e d a = {v : · ⊢ τ} {b : Effect} → (c : Effect) →  
@@ -136,12 +147,21 @@ mutual
           Eq.subst (λ a → `app (`fun _) _ ⇓ _ ↝ a) (Eq.trans (Eq.cong (λ a → a ∙ _) (identityʳ 1#)) (Eq.sym c'≡a∙b')) step) 
       (1# ∙ b) Eq.refl (▹-↦*→⇓ s)
 
+{-
+  Convergent Soundness
+-}
 ↦*→⇓-ε : {e v : · ⊢ τ} {a : Effect} → 
     ε ▹ e ↦* ε ◃ v ↝ a
   ------------------------
   → e ⇓ v ↝ a  
 ↦*→⇓-ε e↦*v = ▹-↦*→⇓ e↦*v
 
+{-
+  Convergent Equivalence
+
+  Since big-step semantics can only describe terminating computations, convergent equivalence 
+  is the only soundness and completeness property that can be stated between small-step and big-step semantics.
+-}
 ↦*⇔⇓ : {e v : · ⊢ τ} {a : Effect} → 
     ε ▹ e ↦* ε ◃ v ↝ a
   ------------------------

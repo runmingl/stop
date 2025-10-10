@@ -2,8 +2,11 @@ open import Prelude
 
 open import Level 
 open import Data.Product
-open import Relation.Binary.PropositionalEquality as Eq using (_≡_; module ≡-Reasoning)
+open import Relation.Binary.PropositionalEquality as Eq using (_≡_)
 
+{-
+  Soundness and Completeness between Stack Machine Semantics and Big-Stop Semantics
+-}
 module SoundnessCompleteness.StackMachineBigStop {ℓ : Level} (monoid : Monoid ℓ) where
 
 open import Language.PCF monoid
@@ -104,6 +107,9 @@ private
   → Σ[ s ∈ State ] (ε ▹ e ↦* s ↝ a)
 ⇩→↦*s-ε e⇩e' = ⇩→↦*s e⇩e' ε
 
+{-
+  Roughly, whenever k ▹◃ e ↦* k' ▹◃ e', then k ● e ⇩ k' ● e'.
+-}
 k●e⇩k'●e' : (s s' : State) (a : Effect) → return s ≡ return s' → Set ℓ
 k●e⇩k'●e' (k ◃ e) (k' ◃ e') a p = e val → k ● e ⇩ Eq.subst (· ⊢_) (Eq.sym p) (k' ● e') ↝ a 
 k●e⇩k'●e' (k ▹ e) (k' ◃ e') a p =         k ● e ⇩ Eq.subst (· ⊢_) (Eq.sym p) (k' ● e') ↝ a 

@@ -2,8 +2,12 @@ open import Prelude
 
 open import Level
 
--- Adapted from PLFA https://plfa.github.io/Substitution
+{-
+  Substitution and Renaming adapted from PLFA https://plfa.github.io/Substitution
 
+  We do not need to prove the substitution lemmas here, as operational semantics only concern closed terms. 
+  Nevertheless substitution lemmas in PLFA are compatible in our setting.
+-}
 module Language.Substitution {ℓ : Level} (monoid : Monoid ℓ) where
 
 open import Language.PCF monoid 

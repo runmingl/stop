@@ -3,6 +3,9 @@ open import Prelude
 open import Level 
 open import Relation.Binary.PropositionalEquality as Eq using (_≡_)
 
+{-
+  Big-Stop Semantics
+-}
 module Language.BigStop {ℓ : Level} (monoid : Monoid ℓ) where
 
 open import Language.PCF monoid
@@ -78,6 +81,10 @@ data _⇩_↝_ : · ⊢ τ → · ⊢ τ → Effect → Set ℓ where
     ------------------------
     e ⇩ e ↝ 1#
 
+{-
+  Transitivity of big-stop semantics can be easily proved by considering the equivalence between 
+  small-step and big-stop semantics. Nevertheless we give a direct proof here, which is not any more difficult. 
+-}
 ⇩-trans : {e e' e'' : · ⊢ τ} {a b : Effect} → 
     e ⇩ e' ↝ a
   → e' ⇩ e'' ↝ b

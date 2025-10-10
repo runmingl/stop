@@ -2,6 +2,9 @@ open import Prelude
 
 open import Level 
 
+{-
+  Big-Step Semantics
+-}
 module Language.BigStep {ℓ : Level} (monoid : Monoid ℓ) where
 
 open import Language.PCF monoid
@@ -52,6 +55,9 @@ data _⇓_↝_ : · ⊢ τ → · ⊢ τ → Effect → Set ℓ where
     ------------------------
     → `eff a e ⇓ v ↝ a ∙ b 
 
+{-
+  Big-step semantics always produces values.
+-}
 ⇓-val : {e v : · ⊢ τ} {a : Effect} → 
     e ⇓ v ↝ a 
   ------------------------
@@ -64,6 +70,9 @@ data _⇓_↝_ : · ⊢ τ → · ⊢ τ → Effect → Set ℓ where
 ⇓-val (be-app _ _ e[`fune][v₁]⇓v↝c) = ⇓-val e[`fune][v₁]⇓v↝c
 ⇓-val (be-eff e⇓v↝a)                = ⇓-val e⇓v↝a
 
+{-
+  Values always produce trivial effects.
+-}
 v⇓v : {v : · ⊢ τ} → 
     v val 
   ------------------------

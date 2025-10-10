@@ -4,6 +4,9 @@ open import Level
 open import Data.Product
 open import Relation.Binary.PropositionalEquality as Eq using (_≡_)
 
+{-
+  Soundness and Completeness between Small-Step and Big-Step Semantics
+-}
 module SoundnessCompleteness.SmallStepBigStep {ℓ : Level} (monoid : Monoid ℓ) where
 
 open import Language.PCF monoid
@@ -82,6 +85,12 @@ private
     (↦*-trans step₁ step₂) step₃'
 ⇓→↦* (be-eff e⇓v↝a) = ↦*-step se-eff (⇓→↦* e⇓v↝a)
 
+{-
+  Convergent Equivalence
+
+  Since big-step semantics can only describe terminating computations, convergent equivalence 
+  is the only soundness and completeness property that can be stated between small-step and big-step semantics.
+-}
 ↦*⇔⇓ : {e v : · ⊢ τ} {a : Effect} → 
     (v val) × (e ↦* v ↝ a) 
   ------------------------

@@ -3,6 +3,9 @@ open import Prelude
 open import Level 
 open import Data.Product
 
+{-
+  Soundness and Completeness between Big-Step and Big-Stop Semantics
+-}
 module SoundnessCompleteness.BigStepBigStop {ℓ : Level} (monoid : Monoid ℓ) where
 
 open import Language.PCF monoid
@@ -42,6 +45,12 @@ private
 ⇩→⇓ (ste-eff e⇩v) v-val                   = be-eff (⇩→⇓ e⇩v v-val)
 ⇩→⇓ ste-stop v-val                        = v⇓v v-val
 
+{-
+  Convergent Equivalence
+
+  Since big-step semantics can only describe terminating computations, convergent equivalence 
+  is the only soundness and completeness property that can be stated between big-step and big-stop semantics.
+-}
 ⇓⇔⇩ : {e v : · ⊢ τ} {a : Effect} → 
     e ⇓ v ↝ a 
   ------------------------

@@ -7,6 +7,9 @@ open import Data.Sum
 open import Data.Product
 open import Relation.Binary.PropositionalEquality as Eq using (_≡_)
 
+{-
+  Progress Theorem using Big-Stop Semantics
+-}
 module Language.Progress {ℓ : Level} (monoid : Monoid ℓ) where
 
 open import Language.PCF monoid
@@ -23,6 +26,9 @@ private
   variable
     τ : Type
 
+{-
+  The notion of a "progressing" big-stop derivation is that it is not always stopping.
+-}
 progressing : {e e' : · ⊢ τ} {a : Effect} → e ⇩ e' ↝ a → Set
 progressing ste-zero             = ⊥
 progressing (ste-suc d)          = progressing d
@@ -40,6 +46,9 @@ infix 2 _↧_↝_
 _↧_↝_ : (e e' : · ⊢ τ) (a : Effect) → Set ℓ
 _↧_↝_ e e' a = Σ[ d ∈ e ⇩ e' ↝ a ] progressing d
 
+{-
+  Progress Theorem: A well-typed closed term is either a value or can take step(s).
+-}
 progress : 
     (e : · ⊢ τ)
   ------------------------
@@ -60,6 +69,10 @@ progress (`app e₁ e₂) with progress e₁
 progress (`app e₁ e₂) | inj₂ (e₁' , a , d , p) = inj₂ (`app e₁' e₂ , a , ste-app-seq₁ d , p)
 progress (`eff a e) = inj₂ (e , a ∙ 1# , ste-eff ste-stop , tt)
 
+{-
+  Progressing big-stop derivation is a right notion for proving progress theorem because 
+  it can always take at least one step in small-step semantics. 
+-}
 progressing-progress : {e₁ e₂ : · ⊢ τ} {a : Effect} → 
     e₁ ↧ e₂ ↝ a
   ------------------------

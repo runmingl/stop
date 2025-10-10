@@ -2,6 +2,9 @@ open import Prelude
 
 open import Level
 
+{-
+  Syntax for PCF using Intrinsic Typing with De Bruijn Indices
+-}
 module Language.PCF {ℓ : Level} (monoid : Monoid ℓ) where
     
 open Monoid monoid public renaming (Carrier to Effect)

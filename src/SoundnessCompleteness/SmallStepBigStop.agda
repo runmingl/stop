@@ -4,6 +4,9 @@ open import Level
 open import Data.Product
 open import Relation.Binary.PropositionalEquality as Eq using (_≡_)
 
+{-
+  Soundness and Completeness between Small-Step and Big-Stop Semantics
+-}
 module SoundnessCompleteness.SmallStepBigStop {ℓ : Level} (monoid : Monoid ℓ) where
 
 open import Language.PCF monoid
@@ -106,6 +109,9 @@ private
 ⇩→↦* (ste-eff e⇩e') = ↦*-step se-eff (⇩→↦* e⇩e')
 ⇩→↦* ste-stop = ↦*-refl
 
+{-
+  Convergent and Divergent Equivalence
+-}
 ↦*⇔⇩ : {e e' : · ⊢ τ} {a : Effect} → 
     e ↦* e' ↝ a
   ------------------------

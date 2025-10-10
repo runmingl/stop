@@ -2,15 +2,18 @@ open import Prelude
 
 open import Level 
 open import Data.Product
-open import Relation.Binary.PropositionalEquality as Eq using (_≡_; module ≡-Reasoning)
+open import Relation.Binary.PropositionalEquality as Eq using (_≡_)
 
+{-
+  Soundness and Completeness between Stack Machine Semantics and Small-Step Semantics
+-}
 module SoundnessCompleteness.StackMachineSmallStep {ℓ : Level} (monoid : Monoid ℓ) where
 
 open import Language.PCF monoid
 open import Language.Substitution monoid
 
 open import Language.StackMachine monoid
-open import Language.SmallStep monoid renaming(_↦*_↝_ to _⇒*_↝_; _↦_↝_ to _⇒_↝_; ↦*-trans to ⇒*-trans; compatible to sscompatible)
+open import Language.SmallStep monoid renaming(_↦*_↝_ to _⇒*_↝_; _↦_↝_ to _⇒_↝_; ↦*-trans to ⇒*-trans)
 
 open MonoidArithmetic monoid
 
@@ -35,6 +38,9 @@ congruence* :  {K : Frame} → (k : K ÷ τ) → {a : Effect} {e e' : · ⊢ τ}
 congruence* k ↦*-refl = ↦*-refl
 congruence* k (↦*-step e⇒e' e'⇒*e'') = ↦*-step (congruence k e⇒e') (congruence* k e'⇒*e'')
 
+{-
+  Roughly, whenever k ▹◃ e ↦* k' ▹◃ e', then k ● e ⇒* k' ● e'.
+-}
 k●e⇒*k'●e' : (s s' : State) (a : Effect) → return s ≡ return s' → Set ℓ
 k●e⇒*k'●e' (k ◃ e) (k' ◃ e') a p = e val → k ● e ⇒* Eq.subst (· ⊢_) (Eq.sym p) (k' ● e') ↝ a 
 k●e⇒*k'●e' (k ▹ e) (k' ◃ e') a p =         k ● e ⇒* Eq.subst (· ⊢_) (Eq.sym p) (k' ● e') ↝ a 
@@ -138,8 +144,9 @@ open import SoundnessCompleteness.StackMachineBigStep monoid
 
 {-
   Convergent Completeness
--}
 
+  The easiest way to prove this goes through big-step semantics, as described by PFPL 28.2.
+-}
 ⇒*→↦*-ε : {e v : · ⊢ τ} {a : Effect} → 
     v val 
   → e ⇒* v ↝ a

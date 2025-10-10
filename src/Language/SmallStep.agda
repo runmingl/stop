@@ -2,6 +2,9 @@ open import Prelude
 
 open import Level 
 
+{-
+  Small-Step Semantics
+-}
 module Language.SmallStep {ℓ : Level} (monoid : Monoid ℓ) where
 
 open import Language.PCF monoid

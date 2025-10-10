@@ -3,6 +3,9 @@ open import Prelude
 open import Relation.Binary.PropositionalEquality as Eq hiding ([_])
 open import Level 
 
+{-
+  Stack Machine Semantics
+-}
 module Language.StackMachine {ℓ : Level} (monoid : Monoid ℓ) where
 
 open import Language.PCF monoid
@@ -157,6 +160,11 @@ return-type : K ÷ τ → Type
 return-type {τ = τ} ε = τ
 return-type (K ⨾ F) = return-type K
 
+{- 
+  A state k ▹◃ e unravels to k ● e by traversing the stack frames in k.
+
+  This is important for proving soundness of stack machine.
+-}
 infix 5 _●_
 _●_ : (k : K ÷ τ) → · ⊢ τ → · ⊢ return-type k
 _●_ ε e = e
