@@ -43,6 +43,16 @@ agda src/Index.agda
 
 ## List of claims
 
+The table below links the **Agda formalization** to the **corresponding parts of the paper**.  
+Each row identifies a definition or theorem proved in the paper and its formal counterpart in the artifact:
+
+- **Section**: where the claim appears in the paper.  
+- **Item**: definition, lemma, or theorem in the paper.
+- **File**: the Agda source file containing the formalization.  
+- **Name**: the specific definition, lemma, or theorem name within the file.  
+
+Together, these entries provide a complete mapping between the text of the paper and its mechanized proofs.
+
 | Section   | Item                                                                     | File                                                                                                 | Name                            | Notes                                                       |
 | -------   | ------------------------------------------------------------------------ | -------------------------------------------------------                                              | ------------------------------- | --------------------------------------                      |
 | §2.1      | Syntax of call-by-value PCF                                              | [`Language.PCF`](./src/Language/PCF.agda)                                                            | `_⊢_` and `_val`                | Figure 1 and 28                                             |                                       
@@ -61,7 +71,7 @@ agda src/Index.agda
 | §6.2      | Lemma 21                                                                 | [`SoundnessCompleteness.StackMachineBigStop`](./src/SoundnessCompleteness/StackMachineBigStop.agda)  | `⇩→↦*-ε`                        |                                                             |
 | §6.2      | Lemma 22                                                                 | [`SoundnessCompleteness.StackMachineBigStop`](./src/SoundnessCompleteness/StackMachineBigStop.agda)  | `⇩→↦*s-ε`                       |                                                             |
 
-Since submission, the artifact has undergone minor updates. Figures 9 and 12 in the paper will be revised accordingly to reflect the updated lines of code in the artifact. The updated versions of these figures are reproduced below.
+Since submission, the artifact has undergone minor updates. Figures 9 and 12 in the paper will be revised accordingly to reflect the updated lines of code in the present artifact. The updated versions of these figures are reproduced below.
 
 | Lemma 14 | Lemma 15 | Theorem 16 | Corollary 17 | Theorem 18 |
 |----------|----------|------------|--------------|------------|
@@ -141,10 +151,13 @@ The file structure included is as follows:
 
 ### Notations
 Throughout the project, we take full advantage of Agda’s excellent support for infix operators to make the code read as naturally as it does on paper. Here are the key notations used:
-- `Γ ⊢ τ` is the typing judgment of a term of type `τ` in context `Γ`.
-- `v val` is the judgment that `v` is a value.
-- `e ⇓ v ↝ a` is the big step evaluation judgment that `e` evaluates to value `v` with effect `a`.
-- `e ↦* e' ↝ a` is the small step evaluation judgment that `e` reduces to `e'` with effect `a`.
-- `k ▹ e ↦* k' ◃ e' ↝ a` is the stack machine evaluation judgment that the stack machine with stack `k` and code `e` reduces to a new stack `k'` and code `e'` with effect `a`.
-- `e ⇩ e' ↝ a` is the Big-Stop evaluation judgment that `e` stops at `e'` with effect `a`.
-- `e ↧ e' ↝ a` is the progressing Big-Stop evaluation judgment that `e` is progressing to `e'` with effect `a`.
+
+| Judgment | Meaning |
+|-----------|----------|
+| `Γ ⊢ τ` | Typing judgment: term of type `τ` in context `Γ`. |
+| `v val` | Judgment that `v` is a value. |
+| `e ⇓ v ↝ a` | Big-step evaluation: `e` evaluates to value `v` with effect `a`. |
+| `e ↦* e' ↝ a` | Small-step evaluation: `e` steps to `e'` with effect `a`. |
+| `k ▹ e ↦* k' ◃ e' ↝ a` | Stack-machine evaluation: state `k ▹ e` steps to `k' ◃ e'` with effect `a`. |
+| `e ⇩ e' ↝ a` | Big-Stop evaluation: `e` stops at `e'` with effect `a`. |
+| `e ↧ e' ↝ a` | Progressing Big-Stop evaluation: `e` progresses to `e'` with effect `a`. |
