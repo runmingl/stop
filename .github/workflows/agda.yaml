@@ -48,5 +48,5 @@ jobs:
           host: ${{ secrets.HOST }}
           username: ${{ secrets.USERNAME }}
           password: ${{ secrets.PASSWORD }}
-          source: "stop/*.html,stop/*.css"
+          source: "stop/*.html,stop/*.css,stop/*.js"
           target: ${{ secrets.AFS_PATH }}
