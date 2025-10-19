@@ -101,7 +101,7 @@ private
 {-
   Divergent Completeness
 -}
-⇩→↦*s-ε : {e e' : · ⊢ τ} {a : Effect} {K : Frame} → 
+⇩→↦*s-ε : {e e' : · ⊢ τ} {a : Effect} → 
     e ⇩ e' ↝ a 
   ------------------------
   → Σ[ s ∈ State ] (ε ▹ e ↦* s ↝ a)
