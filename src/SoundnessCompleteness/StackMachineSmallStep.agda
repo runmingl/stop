@@ -154,3 +154,17 @@ open import SoundnessCompleteness.StackMachineBigStep monoid
   → ε ▹ e ↦* ε ◃ v ↝ a
 ⇒*→↦*-ε v-val e⇒*v = ⇓→↦*-ε (↦*→⇓ v-val e⇒*v)
 
+
+open import SoundnessCompleteness.SmallStepBigStop monoid 
+open import SoundnessCompleteness.StackMachineBigStop monoid
+
+{-
+  Divergent Completeness
+
+  Same idea as convergent completeness but with big-stop
+-}
+⇒*→↦*s-ε : {e e' : · ⊢ τ} {a : Effect} → 
+    e ⇒* e' ↝ a
+  ------------------------
+  → Σ[ s ∈ State ] (ε ▹ e ↦* s ↝ a)
+⇒*→↦*s-ε e⇒*e' = ⇩→↦*s-ε (↦*→⇩ e⇒*e')
