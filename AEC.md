@@ -1,6 +1,6 @@
 # Artifact Evaluation Instructions
 
-This is the artifact instructions for (conditionally accepted) POPL26 paper *Big-Stop Semantics*. The artifact contains Agda formalizations of theorems presented in the paper. 
+This is the artifact instructions for POPL26 paper *Big-Stop Semantics*. The artifact contains Agda formalizations of theorems presented in the paper. 
 
 ## Download, installation, and sanity-testing
 
@@ -62,22 +62,14 @@ Together, these entries provide a complete mapping between the text of the paper
 | §4, §5    | Big-stop semantics                                                       | [`Language.BigStop`](./src/Language/BigStop.agda)                                                    | `_⇩_↝_`                         | Figure 8                                                    |
 | §4.2      | Lemma 13                                                                 | [`Language.Progress`](./src/Language/Progress.agda)                                                  | `progressing-progress`          | Effectful version of lemma 13                               |
 | §5        | Lemma 14                                                                 | [`SoundnessCompleteness.SmallStepBigStep`](./src/SoundnessCompleteness/SmallStepBigStep.agda)        | `↦*⇔⇓`                          |                                                             |
-| §5.1      | Lemma 15                                                                 | [`SoundnessCompleteness.BigStepBigStop`](./src/SoundnessCompleteness/BigStepBigStop.agda)            | `⇓⇔⇩`                           |                                                             |
+| §5.1      | Theorem 15                                                                 | [`SoundnessCompleteness.BigStepBigStop`](./src/SoundnessCompleteness/BigStepBigStop.agda)            | `⇓⇔⇩`                           |                                                             |
 | §5.1      | Theorem 16                                                               | [`SoundnessCompleteness.SmallStepBigStop`](./src/SoundnessCompleteness/SmallStepBigStop.agda)        | `↦*⇔⇩`                          |                                                             |
-| §5.1      | Corollary 17                                                             | [`Language.BigStop`](./src/Language/BigStop.agda)                                                    | `⇩-trans`                       |                                                             |
+| §5.1      | Lemma 17                                                             | [`Language.BigStop`](./src/Language/BigStop.agda)                                                    | `⇩-trans`                       |                                                             |
 | §5.1      | Theorem 18                                                               | [`Language.Progress`](./src/Language/Progress.agda)                                                  | `progress`                      |                                                             |
 | §6.2      | Lemma 19                                                                 | [`SoundnessCompleteness.StackMachineBigStop`](./src/SoundnessCompleteness/StackMachineBigStop.agda)  | `↦*→⇩-ε`                        |                                                             |
 | §6.2      | Lemma 20                                                                 | [`SoundnessCompleteness.StackMachineBigStop`](./src/SoundnessCompleteness/StackMachineBigStop.agda)  | `↦*→⇩s-ε`                       |                                                             |
 | §6.2      | Lemma 21                                                                 | [`SoundnessCompleteness.StackMachineBigStop`](./src/SoundnessCompleteness/StackMachineBigStop.agda)  | `⇩→↦*-ε`                        |                                                             |
 | §6.2      | Lemma 22                                                                 | [`SoundnessCompleteness.StackMachineBigStop`](./src/SoundnessCompleteness/StackMachineBigStop.agda)  | `⇩→↦*s-ε`                       |                                                             |
-
-Since submission, the artifact has undergone minor updates. Table 1 and 2 in the paper will be revised accordingly to reflect the updated lines of code in the present artifact. The updated versions of these figures are reproduced below.
-
-| Lemma 14 | Lemma 15 | Theorem 16 | Corollary 17 | Theorem 18 |
-|----------|----------|------------|--------------|------------|
-| 64       | 28       | 88         | 30           | 18         |
-
-Table 1: Lines of non-blank, non-comment code of properties of big-stop semantics.
 
 |                     | **Soundness**                                                            |                                                                                | **Completeness**                                                               |                                                                     |
 |---------------------|--------------------------------------------------------------------------|--------------------------------------------------------------------------------|--------------------------------------------------------------------------------|---------------------------------------------------------------------|

@@ -38,6 +38,8 @@ The source code may be viewed interactively with syntax highlighting in the brow
 agda --html --html-dir=html src/Index.agda
 ```
 
+This Agda development uses `--with-K` to simplify certain proofs. Indeed, set-level extensional reasoning is sufficient for all theorems in this project. 
+
 ### Notations
 Throughout the project, we take full advantage of Agda’s excellent support for infix operators to make the code read as naturally as it does on paper. Here are the key notations used:
 - `Γ ⊢ τ` is the typing judgment of a term of type `τ` in context `Γ`.
@@ -75,9 +77,6 @@ The project is structured as follows:
 
 **Theorem** `↦*⇔⇩`. The Big-Stop Semantics is equivalent to the small step semantics.
 > For all expressions `e` and `e'` and effects `a`, `e ⇩ e' ↝ a` if and only if `e ↦* e' ↝ a`.
-
-**Theorem** `⇩-trans`. The Big-Stop Semantics is transitive.
-> If `e ⇩ e' ↝ a` and `e' ⇩ e'' ↝ b`, then `e ⇩ e'' ↝ a ∙ b`.
  
 #### [`SoundnessCompleteness.BigStepBigStop`](./src/SoundnessCompleteness/BigStepBigStop.agda)
 
