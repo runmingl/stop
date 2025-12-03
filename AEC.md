@@ -1,10 +1,8 @@
 # Artifact Evaluation Instructions
 
-This is the artifact instructions for POPL26 paper *Big-Stop Semantics*. The artifact contains Agda formalizations of theorems presented in the paper. 
+This is the artifact instructions for POPL 26 paper *Big-Stop Semantics*. The artifact contains Agda formalizations of theorems presented in the paper. 
 
 ## Download, installation, and sanity-testing
-
-We expect the reviewers to review this artifact in *one* of the following two ways:
 
 ### Local development
 One can install Agda and its standard library from scratch, following the instructions:
@@ -20,26 +18,11 @@ If the reviewer is already an Agda user (e.g. has Agda installed on their local 
 | 2.6.4.3       | 2.0                      |
 | 2.6.4.1       | 2.0                      |
 
-To sanity check, locate and unzip `stop.zip`. Inside the `stop` directory, run the following command to load the entire artifact.
+To sanity check, locate and unzip `stop.zip`. Run the following command to load the entire artifact.
 ```
 agda src/Index.agda
 ```
 Alternatively using Emacs or VS Code with Agda emacs mode, open `src/Index.agda` and load the file by via `C-c C-l` (pressing Ctrl-`C` immediately followed by Ctrl-`L`). Depending on the spec of one's local machine, this step should take less than two minutes. 
-
-### Docker development
-We provide a docker container (built on an M2 Mac) that contains Agda version 2.8.0 and standard library version 2.3, and our source code in `stop-docker.zip`. 
-
-Run the following commands to start the docker container:
-```
-docker load < stop-docker.zip 
-docker run -it --rm stop:latest
-```
-
-Inside the docker container, our source code is in `/opt/stop`. Run the following commands to load the entire artifact.
-```
-cd /opt/stop
-agda src/Index.agda
-```
 
 ## List of claims
 
@@ -62,9 +45,9 @@ Together, these entries provide a complete mapping between the text of the paper
 | §4, §5    | Big-stop semantics                                                       | [`Language.BigStop`](./src/Language/BigStop.agda)                                                    | `_⇩_↝_`                         | Figure 8                                                    |
 | §4.2      | Lemma 13                                                                 | [`Language.Progress`](./src/Language/Progress.agda)                                                  | `progressing-progress`          | Effectful version of lemma 13                               |
 | §5        | Lemma 14                                                                 | [`SoundnessCompleteness.SmallStepBigStep`](./src/SoundnessCompleteness/SmallStepBigStep.agda)        | `↦*⇔⇓`                          |                                                             |
-| §5.1      | Theorem 15                                                                 | [`SoundnessCompleteness.BigStepBigStop`](./src/SoundnessCompleteness/BigStepBigStop.agda)            | `⇓⇔⇩`                           |                                                             |
+| §5.1      | Theorem 15                                                               | [`SoundnessCompleteness.BigStepBigStop`](./src/SoundnessCompleteness/BigStepBigStop.agda)            | `⇓⇔⇩`                           |                                                             |
 | §5.1      | Theorem 16                                                               | [`SoundnessCompleteness.SmallStepBigStop`](./src/SoundnessCompleteness/SmallStepBigStop.agda)        | `↦*⇔⇩`                          |                                                             |
-| §5.1      | Lemma 17                                                             | [`Language.BigStop`](./src/Language/BigStop.agda)                                                    | `⇩-trans`                       |                                                             |
+| §5.1      | Lemma 17                                                                 | [`Language.BigStop`](./src/Language/BigStop.agda)                                                    | `⇩-trans`                       |                                                             |
 | §5.1      | Theorem 18                                                               | [`Language.Progress`](./src/Language/Progress.agda)                                                  | `progress`                      |                                                             |
 | §6.2      | Lemma 19                                                                 | [`SoundnessCompleteness.StackMachineBigStop`](./src/SoundnessCompleteness/StackMachineBigStop.agda)  | `↦*→⇩-ε`                        |                                                             |
 | §6.2      | Lemma 20                                                                 | [`SoundnessCompleteness.StackMachineBigStop`](./src/SoundnessCompleteness/StackMachineBigStop.agda)  | `↦*→⇩s-ε`                       |                                                             |
